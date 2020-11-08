@@ -9,6 +9,10 @@ toc: false
 
 # Python에서 asyncio의 동작 원리
 
+[python - How does asyncio actually work? - Stack Overflow](https://stackoverflow.com/questions/49005651/how-does-asyncio-actually-work)
+
+해당글을 번역한 글입니다.
+
 파이썬에서 `asnyc`는 `coroutine`을 기반으로 동작합니다.
 `coroutine`의 동작을 이해하기 전 `generator`의 개념을 알고가면 이해하기 쉽기 때문에 먼저 `generator` 개념 부터 설명하겠습니다.
 
@@ -236,6 +240,5 @@ loop.close()
 
 
 #### 참고자료
-[python - How does asyncio actually work? - Stack Overflow](https://stackoverflow.com/questions/49005651/how-does-asyncio-actually-work)
 [Python Generators/Coroutines/Async IO with examples \| by Alex Anto Navis L | Analytics Vidhya | Medium](https://medium.com/analytics-vidhya/python-generators-coroutines-async-io-with-examples-28771b586578)
 [18.5.3. Tasks and coroutines — Python 3.4.10 documentation](https://docs.python.org/3.4/library/asyncio-task.html#asyncio.coroutine)
