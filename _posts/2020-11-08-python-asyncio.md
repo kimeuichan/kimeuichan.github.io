@@ -1,5 +1,5 @@
 ---
-title: 인터뷰를 하고서 느낀 점
+title: Python에서 asyncio의 동작 원리
 author: daru
 date: 2020-11-08 21:00:00
 categories: [programming,python]
