@@ -1,13 +1,11 @@
 ---
-title: Python에서 asyncio의 동작 원리
+title: Python에서 asyncio의 동작
 author: daru
 date: 2020-11-08 21:00:00
 categories: [programming,python]
 tags: [python,concurrency,async]
 toc: false
 ---
-
-# Python에서 asyncio의 동작 원리
 
 [python - How does asyncio actually work? - Stack Overflow](https://stackoverflow.com/questions/49005651/how-does-asyncio-actually-work)
 
@@ -234,10 +232,10 @@ loop.close()
 
 그리고 무엇보다도 한 기능이 일시 중지 된 동안 다른 기능이 실행되고 `asyncio`와 교차로 실행될 수 있습니다.
 
-### Event loop
+## Event loop
 `asyncio`의 핵심으로 `task`(`coroutine`)를 관리하는 전략이 핵심이다.
 
-> 이벤트 루프는 프로그램 에서 이벤트 또는 메시지 를 기다렸다가 전달 합니다 . 내부 또는 외부 "이벤트 공급자"(일반적으로 이벤트가 도착할 때까지 요청을 차단 함) 에 요청한 다음 관련 이벤트 처리기를 호출 합니다 ( "이벤트 디스패치").
+> 이벤트 루프는 프로그램 에서 이벤트 또는 메시지 를 기다렸다가 전달합니다. 내부 또는 외부 "이벤트 공급자"(일반적으로 이벤트가 도착할 때까지 요청을 차단 함) 에 요청한 다음 관련 이벤트 처리기를 호출 합니다 ( "이벤트 디스패치").
 
 #### 핵심 기능
 - 스케줄링
@@ -251,6 +249,9 @@ loop.close()
 #### 함께보면 좋을 자료
 [파이썬 Asyncio 를 이해하기 위한 여정](https://hamait.tistory.com/834)
 [Python의 asyncio를 직접 만들어보자 (3) - 이상한모임](https://blog.weirdx.io/post/56921)
+[I/O Multiplexing(select, poll, epoll, kqueue) \| Mimul Tech log](https://www.mimul.com/blog/io-multiplexing/)
+[Understanding event loop with Python \| by Ilya Pekelny | Medium](https://medium.com/@pekelny/fake-event-loop-python3-7498761af5e0)
+[libuv-vs-libev.md · GitHub](https://gist.github.com/andreybolonin/2413da76f088e2c5ab04df53f07659ea)
 
 
 #### 참고자료
