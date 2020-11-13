@@ -179,8 +179,7 @@ loop.close()
 `compute()`는 `print_sum()`에 연결되어있습니다. 
 `print_sum()` 은 `compute()`가 끝나 결과를 반환할 때까지 기다립니다.
 
-![tulip_coro.png](:storage/08cfc2f4-31e1-4832-8fa3-03e829c44c65/24b4e45f.png)
-
+![tulip_coro.png](https://docs.python.org/3.5/_images/tulip_coro.png)
 
 
 **Task**는 [`AbstractEventLoop.run_until_complete()`](https://docs.python.org/3.5/library/asyncio-eventloop.html#asyncio.AbstractEventLoop.run_until_complete) 메소드에서 `task`가 아닌 `coroutine` 객체를 통해 성성됩니다.
