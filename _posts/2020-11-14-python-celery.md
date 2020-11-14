@@ -9,6 +9,7 @@ toc: false
 
 
 > 해당 글은 `celery`를 이용하여 코드를 잘 작성하는것에 비중을 둔 글이 아니라 
+
 > 간단한 `celery` 소개 및 특징과 `broker`에 대해 공부하기 위해 작성한 글입니다.
 
 
@@ -22,7 +23,6 @@ toc: false
 **실시간 처리에 중점을두고 작업 예약을 지원하는 작업 큐입니다.**
 
 물론 스케줄링을 지원하지만 실시간 처리에 중점을 두고 있습니다.
-1
 
 ## Celery 구성 요소
 `Celery`의 구성요소는 크게 3가지로 구분됩니다.
@@ -46,14 +46,14 @@ toc: false
 - Amazon SQS(모니터링, 원격 제어 지원X)
 - Zookeeper(실험적)
 
-해당 글에서는 일반적으로 많이 쓰는 `RabbitMQ`와 `Redis`만을 다룰 예정입니다.
+해당 글에서는 일반적으로 많이 쓰는 `RabbitMQ`와 `Redis`를 다룰 예정입니다.
 
 ### RabbitMQ vs Redis
 
 #### RabbitMQ
 - `RabbitMQ`의 인증 및 인가 방식을 그대로 사용할 수 있습니다.
 - 매우 효율적이고 광범위하게 배포 및 테스트 된 메시지 브로커이지만 더 많은 내구성과 안정성을 위해 조정하면 성능에 영향을 미칠 수 있습니다.
-- 고급 라우팅 요구 사항이있는 엔터프라이즈 메시징을 제공하는 데 더 적합합니다.
+- 고급 라우팅 요구 사항이있는 엔터프라이즈 메시징을 제공하는데 더 적합합니다.
 
 ![RabbitMQ_ACK.PNG](https://ssup2.github.io/images/theory_analysis/RabbitMQ_ACK/RabbitMQ_ACK.PNG)
 
@@ -76,7 +76,9 @@ toc: false
 
 
 > `Redis`가 속도면에서 더 빠르다고는 하지만 엔터프라이즈 환경에서 다양한 라우팅, 메시지 유실 방지 등이 필요로 합니다.
-> 하지만 메시지가 유실되도 상관이 없고 속도가 중요한 경우는 `Redis`가 더 효율적일 수 있습니다. 상황에 맞춰 사용하는 것이 좋습니다.
+> 
+> 하지만 메시지가 유실되어도 상관이 없고 속도가 중요한 경우는 `Redis`가 더 효율적일 수 있습니다. 
+> 상황에 맞춰 사용하는 것이 좋습니다.
 
 
 
@@ -124,7 +126,9 @@ celery multi restart 1 --pidfile=/var/run/celery/%n.pid
 회사에서도 `celery`를 통해 비동기 작업을 처리하고 있지만 특수한 방법으로 사용하다보니 종종 `message`가 사라지거나 `task`를 처리하는 중에 사라지는 경우가 종종 있었습니다. 또한 `celery`를 k8s로 관리하는데 `workload resource` 업데이트를 하면 `container`가 거의 곧 바로 죽어 작업을 처리하지 않고 사라지는 경우도 있엇습니다.
 글을 작성하면서 배운 내용을 기반으로 `graceful shutdown`까지 적용해보려 합니다. 
 > k8s에서 `Pod` 종료 이벤트의 순서는 `SIGTERM`을 1번 프로세스에 전송합니다. (`terminationGracePeriodSeconds` 30초)
+>
 > 유예 기간이 만료되어도 `Pod`이 삭제되지 않으면 `SIGKILL` 신호가 해당 프로세스로 전송되고 `Pod`가 API 서버에 삭제됩니다.
+>
 > 따라서, `terminationGracePeriodSeconds`을 적절하게 늘려주어 `graceful shutdown`이 되도록 해보려합니다.
 
 
