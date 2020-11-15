@@ -46,7 +46,7 @@ X.X.X.X   join-rabbitmq
 그 다음 제대로 통신이 되기 위해서는 linux builtin `echo` 명령어를 사용하여 확인할 수 있습니다.
 
 ```shell
-echo /dev/tcp/join-rabbitmq/4639
+echo > /dev/tcp/join-rabbitmq/4639
 ```
 
 아무런 메시지가 뜨지 않는다면 `tcp` 통신이 성공한 것입니다.
