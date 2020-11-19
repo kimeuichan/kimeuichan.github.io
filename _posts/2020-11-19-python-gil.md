@@ -1,7 +1,7 @@
 ---
 title: Python의 GIL
 author: daru
-date: 2020-11-14 21:00:00
+date: 2020-11-19 21:00:00
 categories: [programming,python]
 tags: [python,concurrency]
 ---
