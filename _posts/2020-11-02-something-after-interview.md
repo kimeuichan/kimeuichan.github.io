@@ -2,7 +2,7 @@
 title: 인터뷰를 하고서 느낀 점
 author: daru
 date: 2020-11-02 09:00:00
-categories: [Blogging]
+categories: [blogging]
 tags: [interview]
 toc: false
 published: false
