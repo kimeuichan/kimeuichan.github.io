@@ -1,7 +1,7 @@
 ---
 title: Asyncio에서 동기 라이브러리 사용하기(feat.태스크와 코루틴)
 author: daru
-date: 2020-12-11 00:45:00
+date: 2020-12-10 15:45:00
 categories: [programming,python]
 tags: [python,concurrency,asyncio]
 ---
