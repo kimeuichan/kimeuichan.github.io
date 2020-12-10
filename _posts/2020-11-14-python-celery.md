@@ -4,12 +4,11 @@ author: daru
 date: 2020-11-14 21:00:00
 categories: [programming,python]
 tags: [python,async,celery]
-toc: false
 ---
 
 
 > 해당 글은 `celery`를 이용하여 코드를 잘 작성하는것에 비중을 둔 글이 아니라 
-
+>
 > 간단한 `celery` 소개 및 특징과 `broker`에 대해 공부하기 위해 작성한 글입니다.
 
 

@@ -3,8 +3,7 @@ title: Python에서 asyncio의 동작
 author: daru
 date: 2020-11-08 21:00:00
 categories: [programming,python]
-tags: [python,concurrency,async]
-toc: false
+tags: [python,concurrency,asyncio]
 ---
 
 [python - How does asyncio actually work? - Stack Overflow](https://stackoverflow.com/questions/49005651/how-does-asyncio-actually-work)
