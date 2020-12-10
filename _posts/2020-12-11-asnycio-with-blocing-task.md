@@ -6,7 +6,6 @@ categories: [programming,python]
 tags: [python,concurrency,asyncio]
 ---
 
-
 회사에서 많은 양의 API를 처리해야하는 서버를 구축해야하는 경우가 생겼습니다.
 
 프로젝트 셋업에 있어 빠른 처리를 위해 `Sanic` 프레임워크를 사용하기로 했습니다.
@@ -233,6 +232,8 @@ cpu-bound task에 process context swicthing 때문인지 크게 다른점은 없
 다른점은 `os.getpid()`를 통해 확인할수 있듯이 다른 process로 돌아간다는 점이였습니다.
 
 **`Sanic`에서 `Task`을 사용한 방법과 코루틴을 이용한 방법에 성능적 차이가 있을지 궁금했졌습니다.**
+> 테스트 환경
+>
 > Macbook pro 2018 15 inch
 >
 > 2.6 GHz 6코어 Intel Core i7
@@ -276,9 +277,11 @@ app.run("0.0.0.0", port=8080, debug=True)
 **sleep 함수** 결과
 
 *코루틴 결과*
+
 ![sanic-sleep-coroutine.png](/assets/img/posts/asnycio-with-blocing-task/sanic-sleep-coroutine.png)
 
 *태스크 결과*
+
 ![sanic-sleep-task.png](/assets/img/posts/asnycio-with-blocing-task/sanic-sleep-task.png)
 
 
@@ -322,9 +325,11 @@ app.run("0.0.0.0", port=8080, debug=True)
 **aiohttp GET** 결과
 
 *코루틴 결과*
+
 ![sanic-http-coroutine.png](/assets/img/posts/asnycio-with-blocing-task/sanic-http-coroutine.png)
 
 *태스크 결과*
+
 ![sanic-http-task.png](/assets/img/posts/asnycio-with-blocing-task/sanic-http-task.png)
 
 
@@ -385,7 +390,7 @@ async def task(req):
 
 기다리면 처리 갯수는 올라갔으나, 의미가 없다고 판단해 모두 스톱하였습니다.
 
-![sanic-celery-run-in-executor.png](/assets/img/posts/asnycio-with-blocing-task/sanic-sanic-celery-run-in-executor.png)
+![sanic-celery-run-in-executor.png](/assets/img/posts/asnycio-with-blocing-task/sanic-celery-run-in-executor.png)
 
 
 ### `awaitable`을 이용해 돌리기
