@@ -399,6 +399,7 @@ async def task(req):
 코루틴을 이용해서 처리라도 해보자라는 생각이 들어 코루틴으로 작성하였습니다.
 
 **Coroutine**
+
 가장 기본적인 코루틴을 이용하도록 다음과 같이 작성해서 테스트 해보았습니다.
 ```python
 @app.route("/coroutine")
@@ -421,6 +422,7 @@ async def coroutine(req):
 
 
 **Task**
+
 위의 코루틴 예제를 이용하여 태스크를 만들고 실행하도록 작성하였습니다.
 
 태스크를 만드는데 간단한 몇가지 방법이 있는데 제가 사용한 방법은 아래 두가지입니다.
@@ -480,6 +482,7 @@ async def task(req):
 
 
 **create_task** 버전
+
 [`create_task(coro, *, name=None)`](https://docs.python.org/ko/3/library/asyncio-task.html#asyncio.create_task)는 가장 간단하게 태스크를 만들 수 있는 간단한 함수입니다.
 
 ```python
@@ -503,6 +506,7 @@ async def task(req):
 
 
 **Non-blocking**
+
 논외로 그냥 일반 함수로 실행하면 어떻게 될지 궁금하여 실행해보았습니다.
 
 ```python
