@@ -1,5 +1,5 @@
 ---
-title: Aloguru를 사용하여 python 로깅 쉽게하기
+title: loguru를 사용하여 python 로깅 쉽게하기
 author: daru
 date: 2021-01-06 15:45:00
 categories: [programming,python]
