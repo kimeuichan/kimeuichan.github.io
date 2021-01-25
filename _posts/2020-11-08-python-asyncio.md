@@ -244,7 +244,9 @@ loop.close()
 - 비동기적 서브프로세스(코루틴을 뜻하는것일까?)
 - 호출 등록, 실행 및 취소
 
-> macOS Python3.7 버전에서는 I/O Multiplexing을 [`select`](https://en.wikipedia.org/wiki/Select_(Unix))를 사용하는 것으로 보입니다.
+> ~~macOS Python3.7 버전에서는 I/O Multiplexing을 [`select`](https://en.wikipedia.org/wiki/Select_(Unix))를 사용하는 것으로 보입니다.~~
+>
+> `select` 함수를 사용하는 것이 아니라 python `selector` 모듈에 환경에 맞 멀티 I/O 플렉싱 모델을 기반으로 사용합니다.
 > ```python
 > import asyncio
 > print(asyncio.get_event_loop())
