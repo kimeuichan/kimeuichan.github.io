@@ -1,0 +1,389 @@
+<!DOCTYPE html><html lang="en" mode="light" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta name="theme" content="Chirpy v2.5.1"><meta name="google-site-verification" content="ADnLC0IeVgMa6OjbbqiE36ym_6ZmRiyEYXoege314pM" /><meta name="generator" content="Jekyll v4.2.0" /><meta property="og:title" content="Python Interpreter" /><meta name="author" content="daru" /><meta property="og:locale" content="en_US" /><meta name="description" content="파이썬을 꽤나 오래 사용햇지만, 파이썬이 VM 위에서 돌아가는 언어라는걸 올해 초 알게 되었습니다. 회사, 우선순위 높은 공부 등의 이유로 미루어 왔던 내용을 정리해서 올려봅니다." /><meta property="og:description" content="파이썬을 꽤나 오래 사용햇지만, 파이썬이 VM 위에서 돌아가는 언어라는걸 올해 초 알게 되었습니다. 회사, 우선순위 높은 공부 등의 이유로 미루어 왔던 내용을 정리해서 올려봅니다." /><link rel="canonical" href="https://kimeuichan.github.io/posts/python-interpreter/" /><meta property="og:url" content="https://kimeuichan.github.io/posts/python-interpreter/" /><meta property="og:site_name" content="잡잡 블로그" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2020-11-27T04:00:00+09:00" /><meta name="google-site-verification" content="google_meta_tag_verification" /> <script type="application/ld+json"> {"author":{"@type":"Person","name":"daru"},"description":"파이썬을 꽤나 오래 사용햇지만, 파이썬이 VM 위에서 돌아가는 언어라는걸 올해 초 알게 되었습니다. 회사, 우선순위 높은 공부 등의 이유로 미루어 왔던 내용을 정리해서 올려봅니다.","mainEntityOfPage":{"@type":"WebPage","@id":"https://kimeuichan.github.io/posts/python-interpreter/"},"@type":"BlogPosting","url":"https://kimeuichan.github.io/posts/python-interpreter/","headline":"Python Interpreter","dateModified":"2020-11-27T04:00:00+09:00","datePublished":"2020-11-27T04:00:00+09:00","@context":"https://schema.org"}</script><title>Python Interpreter | 잡잡 블로그</title><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico" type="image/x-icon"><link rel="icon" href="/assets/img/favicons/favicon.ico" type="image/x-icon"><link rel="apple-touch-icon" href="/assets/img/favicons/apple-icon.png"><link rel="apple-touch-icon" href="/assets/img/favicons/apple-icon-precomposed.png"><link rel="apple-touch-icon" sizes="57x57" href="/assets/img/favicons/apple-icon-57x57.png"><link rel="apple-touch-icon" sizes="60x60" href="/assets/img/favicons/apple-icon-60x60.png"><link rel="apple-touch-icon" sizes="72x72" href="/assets/img/favicons/apple-icon-72x72.png"><link rel="apple-touch-icon" sizes="76x76" href="/assets/img/favicons/apple-icon-76x76.png"><link rel="apple-touch-icon" sizes="114x114" href="/assets/img/favicons/apple-icon-114x114.png"><link rel="apple-touch-icon" sizes="120x120" href="/assets/img/favicons/apple-icon-120x120.png"><link rel="apple-touch-icon" sizes="144x144" href="/assets/img/favicons/apple-icon-144x144.png"><link rel="apple-touch-icon" sizes="152x152" href="/assets/img/favicons/apple-icon-152x152.png"><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-icon-180x180.png"><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicons/android-icon-192x192.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="96x96" href="/assets/img/favicons/favicon-96x96.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png"><link rel="manifest" href="/assets/img/favicons/manifest.json"><meta name='msapplication-config' content='/assets/img/favicons/browserconfig.xml'><meta name="msapplication-TileColor" content="#ffffff"><meta name="msapplication-TileImage" content="/assets/img/favicons/ms-icon-144x144.png"><meta name="theme-color" content="#ffffff"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"><link rel="dns-prefetch" href="https://fonts.gstatic.com"><link rel="preconnect" href="https://www.google-analytics.com" crossorigin="use-credentials"><link rel="dns-prefetch" href="https://www.google-analytics.com"><link rel="preconnect" href="https://www.googletagmanager.com" crossorigin="anonymous"><link rel="dns-prefetch" href="https://www.googletagmanager.com"><link rel="preconnect" href="cdn.jsdelivr.net"><link rel="dns-prefetch" href="cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha256-LA89z+k9fjgMKQ/kq4OO2Mrf8VltYml/VES+Rg0fh20=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.11.2/css/all.min.css" integrity="sha256-+N4/V/SbAFiW1MPBCXnfnP9QSN3+Keu+NlB+0ev/YKQ=" crossorigin="anonymous"><link rel="preload" as="style" href="/assets/css/post.css"><link rel="stylesheet" href="/assets/css/post.css"><link rel="preload" as="style" href="/assets/css/lib/bootstrap-toc.min.css"><link rel="stylesheet" href="/assets/css/lib/bootstrap-toc.min.css" /> <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script> <script async src="https://cdn.jsdelivr.net/combine/npm/popper.js@1.15.0,npm/bootstrap@4/dist/js/bootstrap.min.js"></script> <script async src="/assets/js/post.min.js"></script> <script defer src="/app.js"></script><body data-spy="scroll" data-target="#toc"><div id="sidebar" class="d-flex flex-column"><div id="nav-wrapper"><div id="profile-wrapper" class="d-flex flex-column"><div id="avatar" class="d-flex justify-content-center"> <a href="/" alt="avatar"> <img src="/assets/img/avatar.jpg" alt="avatar" onerror="this.style.display='none'"> </a></div><div class="profile-text mt-3"><div class="site-title"> <a href="/">잡잡 블로그</a></div><div class="site-subtitle font-italic">개발 및 잡다한 내용을 정리한 블로그입니다.</div></div></div><ul class="nav flex-column"><li class="nav-item d-flex justify-content-center "> <a href="/" class="nav-link d-flex justify-content-center align-items-center w-100"> <i class="fa-fw fas fa-home ml-xl-3 mr-xl-3 unloaded"></i> <span>HOME</span> </a><li class="nav-item d-flex justify-content-center "> <a href="/tabs/categories/" class="nav-link d-flex justify-content-center align-items-center w-100"> <i class="fa-fw fas fa-stream ml-xl-3 mr-xl-3 unloaded"></i> <span>CATEGORIES</span> </a><li class="nav-item d-flex justify-content-center "> <a href="/tabs/tags/" class="nav-link d-flex justify-content-center align-items-center w-100"> <i class="fa-fw fas fa-tags ml-xl-3 mr-xl-3 unloaded"></i> <span>TAGS</span> </a><li class="nav-item d-flex justify-content-center "> <a href="/tabs/archives/" class="nav-link d-flex justify-content-center align-items-center w-100"> <i class="fa-fw fas fa-archive ml-xl-3 mr-xl-3 unloaded"></i> <span>ARCHIVES</span> </a></ul></div><div class="sidebar-bottom d-flex flex-wrap justify-content-around mt-4"> <a href="https://github.com/kimeuichan" aria-label="github" target="_blank" rel="noopener"> <i class="fab fa-github-alt"></i> </a> <a href="https://twitter.com/" aria-label="twitter" target="_blank" rel="noopener"> <i class="fab fa-twitter"></i> </a> <a href=" javascript:location.href = 'mailto:' + ['eck7965','gmail.com'].join('@')" aria-label="email" > <i class="fas fa-envelope"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></div><div id="topbar-wrapper" class="row justify-content-center topbar-down"><div id="topbar" class="col-11 d-flex h-100 align-items-center justify-content-between"> <span id="breadcrumb"> <span> <a href="/"> Posts </a> </span> <span>Python Interpreter</span> </span> <i id="sidebar-trigger" class="fas fa-bars fa-fw"></i><div id="topbar-title"> Post</div><i id="search-trigger" class="fas fa-search fa-fw"></i> <span id="search-wrapper" class="align-items-center"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" placeholder="Search..."> <i class="fa fa-times-circle fa-fw" id="search-cleaner"></i> </span> <span id="search-cancel" >Cancel</span></div></div><div id="main-wrapper"><div id="main"><div class="row"><div id="post-wrapper" class="col-12 col-lg-11 col-xl-8"><div class="post pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><h1 data-toc-skip>Python Interpreter</h1><div class="post-meta text-muted d-flex flex-column"><div> Posted <span class="timeago " data-toggle="tooltip" data-placement="bottom" title="Fri, Nov 27, 2020, 4:00 AM +0900" > Nov 27, 2020 <i class="unloaded">2020-11-27T04:00:00+09:00</i> </span> by <span class="author"> daru </span></div></div><div class="post-content"><p>파이썬을 꽤나 오래 사용햇지만, 파이썬이 VM 위에서 돌아가는 언어라는걸 올해 초 알게 되었습니다. 회사, 우선순위 높은 공부 등의 이유로 미루어 왔던 내용을 정리해서 올려봅니다.</p><p>해당 글은 <a href="https://www.aosabook.org/en/500L/a-python-interpreter-written-in-python.html">500 Lines or Less | A Python Interpreter Written in Python</a>을 번역한 글입니다.</p><h2 id="interperter란">Interperter란</h2><ul><li><code class="language-plaintext highlighter-rouge">interpreter</code>라는 단어는 Python을 논의 할 때 다양한 방식으로 사용될 수 있습니다.<li>terminal에 <code class="language-plaintext highlighter-rouge">python</code>을 입력하면 나오는 인터프리터는 <code class="language-plaintext highlighter-rouge">Python REPL</code>을 참조합니다.</ul><p>“파이썬 인터프리터”를 “파이썬”과 사용하여 처음부터 끝까지 파이썬 코드를 실행하는 것으로 대부분 알고 있습니다.</p><p>이 장에서 <code class="language-plaintext highlighter-rouge">interpreter</code>는 좁은 의미를 가지고 있으며, 파이썬 프로그램을 실행하는 마지막 단계입니다.</p><p>Python 코드가 인터프리터에서 실행되기 전 과정</p><ul><li>렉싱(어휘 분석)<li>파싱<li>컴파일</ul><p>해당 과정을 거치면 프로그래머의 소스 코드에서 인터프리터가 이해할 수 있는 명령이 포함된 구조화된 코드 개체로 변환합니다. 인터프리터의 임무는 이러한 코드 객체를 가져와 처리하는 것 입니다.</p><p>Python을 포함한 대부분의 <code class="language-plaintext highlighter-rouge">interpreter</code> 언어에는 컴파일 단계가 포함됩니다.</p><p>Python은 C 또는 Rust와 같은 “컴파일 된” 언어와 달리 <code class="language-plaintext highlighter-rouge">Ruby</code> 또는 <code class="language-plaintext highlighter-rouge">Perl</code>과 같은 “해석 된”언어라고도 합니다.</p><p>파이썬을 “해석”이라고 부르는 이유 : 컴파일 단계가 컴파일 언어(C 언어 등)보다 적은 작업을 수행합니다. (인터프리터가 상대적으로 더 많은 작업을 수행)</p><p>또한, 이 장의 뒷 부분에서 볼 수 있듯이 Python 컴파일러는 C 컴파일러보다 프로그램 동작에 대한 정보가 훨씬 적습니다.</p><h2 id="python-interpreter">Python Interpreter</h2><ul><li>Python 인터프리터는 가상 머신입니다.<li>실제 컴퓨터를 에뮬레이트하는 소프트웨어입니다.</ul><p>가상 머신은 스택 머신입니다. 특정 메모리 위치에 쓰고 읽는 레지스터 머신과는 달리 여러 스택을 조작하여 작업을 수행합니다.</p><p>파이썬 인터프리터는 바이트 코드를 읽어 실행합니다. 입력은 바이트 코드이며 명령어 세트 입니다.</p><p>Python을 작성할 때 렉서, 파서 및 컴파일러는 인터프리터가 작동 할 코드 객체를 생성합니다.</p><p>각 코드 객체에는 실행할 명령어 세트 (바이트 코드)와 인터프리터에 필요한 기타 정보가 포함되어 있습니다.</p><p>바이트 코드는 Python 코드의 중간 표현입니다. 인터프리터가 이해할 수있는 방식으로 작성한 소스 코드를 표현합니다.</p><p>어셈블리 언어가 C 코드와 하드웨어 간의 중간 역할을 하는 방식과 유사합니다.</p><h3 id="small-interpreter">Small Interpreter</h3><p>이를 구체적 이해하기 위해 숫자만 덧셈 할 수 있는 인터프리터로 시작하겠습니다. (세 가지 명령만 동작)</p><p>실행할 수 있는 모든 코드는 서로 다른 이 세 가지 명령어 조합으로 구성됩니다.</p><p>세 가지 명령은 다음과 같습니다.</p><ul><li>LOAD_VALUE<li>ADD_TWO_VALUES<li>PRINT_ANSWER</ul><p>이 장에서는 어휘 분석기, 파서는 컴파일러에서 명령어 세트가 생성되는 것과는 관련이 없기 때문에 다루지 않습니다.</p><p><code class="language-plaintext highlighter-rouge">7 + 5</code>인 경우</p><p>다음과 같은 명령어 세트를 생성합니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre><td class="rouge-code"><pre><span class="n">what_to_execute</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">"instructions"</span><span class="p">:</span> <span class="p">[(</span><span class="s">"LOAD_VALUE"</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>  <span class="c1"># the first number
+</span>                     <span class="p">(</span><span class="s">"LOAD_VALUE"</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>  <span class="c1"># the second number
+</span>                     <span class="p">(</span><span class="s">"ADD_TWO_VALUES"</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s">"PRINT_ANSWER"</span><span class="p">,</span> <span class="bp">None</span><span class="p">)],</span>
+    <span class="s">"numbers"</span><span class="p">:</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span> <span class="p">}</span>
+</pre></table></code></div></div><p>Python 인터프리터는 스택 머신이므로 스택을 조작하여 두 개의 숫자를 덧셈합니다.</p><ul><li>첫 번째 명령어(<code class="language-plaintext highlighter-rouge">LOAD_VALUE</code>)를 실행하고 첫 번째 숫자를 스택에 푸시하는 것으로 시작합니다.<li>두 번째 숫자도 스택에 푸쉬합니다.<li>세 번째 명령어인 <code class="language-plaintext highlighter-rouge">ADD_TWO_VALUES</code>에서는 두 숫자를 꺼내서 더한 다음 결과를 스택에 푸시합니다.<li>마지막으로 스택에서 답변을 꺼내 출략합니다.</ul><p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7 " data-src="https://www.aosabook.org/en/500L/interpreter-images/interpreter-stack.png" alt="interpreter-stack.png" /></p><p>이 <code class="language-plaintext highlighter-rouge">LOAD_VALUE</code> 명령어는 인터프리터에게 숫자를 스택에 푸시하라고 지시하지만 명령어만으로는 숫자를 지정하지 않습니다. 각 명령어에는 로드 할 번호를 찾을 위치를 인터프리터에게 알려주는 추가 정보가 필요합니다. 따라서 우리의 명령어 세트는 명령어 자체와 명령어에 필요한 상수 목록의 두 부분으로 구성됩니다. (Python에서 “instructions”라고 부르는 것은 바이트 코드이고 아래의 “what to execute”객체는 code 객체 입니다.)</p><p>명령어에 값 대신 인덱스를 사용하는 이유?</p><ul><li>숫자 대신 문자열을 더하는 경우, 문자열은 동적이기 때문에 명령어에 문자열을 쓰는 것을 선호하지 않습니다.<li>값을 쓰게 되면 어느 복사가 일어남. 이 디자인은 필요한 각 개체의 복사본을 하나만 가질 수 있음.</ul><p><code class="language-plaintext highlighter-rouge">ADD_TWO_VALUES</code>에서 다른 명령어가 필요한지 궁금 할 것 입니다. 사실, 두 개의 숫자를 더하는 간단한 경우에 대한 예제는 너무 간단합니다. 그러나 이 명령어는 더 복잡한 프로그램을 위한 기초입니다. 예를 들어 지금까지 정의한 명령어만으로 올바른 명령어 집합이 제공되면 이미 세 개의 값 또는 임의의 값을 더할 수 있습니다. 스택은 인터프리터의 상태를 추적 할 수 있는 깨끗한 방법을 제공하며 더 많은 복잡한 경우를 지원할 수 있습니다.</p><p>이제 인터프리터를 작성해 봅시다. 인터프리터 객체에는 스택이 있으며 <code class="language-plaintext highlighter-rouge">list</code>으로 표시됩니다. 객체에는 각 명령을 실행하는 방법을 설명하는 메서드도 있습니다. 예를 들어,<code class="language-plaintext highlighter-rouge">LOAD_VALUE</code>의 경우 인터프리터는 값을 스택에 푸시합니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Interpreter</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">stack</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">LOAD_VALUE</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">stack</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">PRINT_ANSWER</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">stack</span><span class="p">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">ADD_TWO_VALUES</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">first_num</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">stack</span><span class="p">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">second_num</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">stack</span><span class="p">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="n">first_num</span> <span class="o">+</span> <span class="n">second_num</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">stack</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">total</span><span class="p">)</span>
+</pre></table></code></div></div><p>이 세 가지 함수는 인터프리터가 이해하는 세 가지 명령을 구현합니다. 인터프리터는 모든 것을 하나로 묶고 실제로 실행하는 함수가 하나 더 필요합니다. 바로 <code class="language-plaintext highlighter-rouge">run_code</code>입니다.</p><p>메서드 <code class="language-plaintext highlighter-rouge">run_code</code>는 <code class="language-plaintext highlighter-rouge">what_to_execute</code> 위에서 정의한 <code class="language-plaintext highlighter-rouge">dict</code>을 인수로 사용합니다. 각 명령어를 반복하고 해당 명령어에 대한 인수가 있는 경우 처리한 다음 인터프리터 객체에서 해당 메서드를 호출합니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre><td class="rouge-code"><pre>    <span class="k">def</span> <span class="nf">run_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">what_to_execute</span><span class="p">):</span>
+        <span class="n">instructions</span> <span class="o">=</span> <span class="n">what_to_execute</span><span class="p">[</span><span class="s">"instructions"</span><span class="p">]</span>
+        <span class="n">numbers</span> <span class="o">=</span> <span class="n">what_to_execute</span><span class="p">[</span><span class="s">"numbers"</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">each_step</span> <span class="ow">in</span> <span class="n">instructions</span><span class="p">:</span>
+            <span class="n">instruction</span><span class="p">,</span> <span class="n">argument</span> <span class="o">=</span> <span class="n">each_step</span>
+            <span class="k">if</span> <span class="n">instruction</span> <span class="o">==</span> <span class="s">"LOAD_VALUE"</span><span class="p">:</span>
+                <span class="n">number</span> <span class="o">=</span> <span class="n">numbers</span><span class="p">[</span><span class="n">argument</span><span class="p">]</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">LOAD_VALUE</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">instruction</span> <span class="o">==</span> <span class="s">"ADD_TWO_VALUES"</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">ADD_TWO_VALUES</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">instruction</span> <span class="o">==</span> <span class="s">"PRINT_ANSWER"</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">PRINT_ANSWER</span><span class="p">()</span>
+</pre></table></code></div></div><p>이를 테스트하기 위해 객체의 인스턴스를 생성한 다음 <code class="language-plaintext highlighter-rouge">run_code</code> 위에 정의 된 <code class="language-plaintext highlighter-rouge">7 + 5</code>를 추가하기위한 명령어 세트로 메서드를 호출할 수 있습니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre>    <span class="n">interpreter</span> <span class="o">=</span> <span class="n">Interpreter</span><span class="p">()</span>
+    <span class="n">interpreter</span><span class="p">.</span><span class="n">run_code</span><span class="p">(</span><span class="n">what_to_execute</span><span class="p">)</span>
+</pre></table></code></div></div><p>물론 답은 12입니다.</p><p>이 인터프리터는 매우 제한적이지만이 프로세스는 실제 Python 인터프리터가 숫자를 추가하는 방식과 거의 동일합니다. 이 작은 예제에서도 몇 가지 유의해야 할 사항이 있습니다.</p><ul><li>일부 명령에는 인수가 필요합니다. 실제 Python 바이트 코드에서는 약 절반 정도의 명령어에 인수가 있습니다.<li>인수는 예제에서와 같이 명령어로 포장됩니다. 명령어에 대한 인수는 호출되는 메서드에 대한 인수와 다릅니다.<li><code class="language-plaintext highlighter-rouge">ADD_TWO_VALUES</code>에는 인수가 필요하지 않습니다. 대신 함께 더할 값이 인터프리터 스택에서 튀어 나왔습니다. 이것은 스택 기반 인터프리터의 정의 기능입니다.</ul><blockquote><p><code class="language-plaintext highlighter-rouge">이것은 스택 기반 인터프리터의 정의 기능입니다.</code>를 유추하자면 인터프린터의 구현에 따라 실제 구현이 달라질 수 있는 것 같습니다.</p></blockquote><p>인터프리터를 변경하지 않고 유효한 명령어 세트가 주어지면 한 번에 두 개 이상의 숫자를 추가 할 수 있습니다.</p><p>아래 명령어 세트를 고려하십시오. 어떤 일이 일어날 것으로 예상합니까? 컴파일러가 있다면이 명령어 세트를 생성하기 위해 어떤 코드를 작성할 수 있습니까?</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre><td class="rouge-code"><pre>    <span class="n">what_to_execute</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"instructions"</span><span class="p">:</span> <span class="p">[(</span><span class="s">"LOAD_VALUE"</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s">"LOAD_VALUE"</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s">"ADD_TWO_VALUES"</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s">"LOAD_VALUE"</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s">"ADD_TWO_VALUES"</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s">"PRINT_ANSWER"</span><span class="p">,</span> <span class="bp">None</span><span class="p">)],</span>
+        <span class="s">"numbers"</span><span class="p">:</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span> <span class="p">}</span>
+</pre></table></code></div></div><p>이 시점에서 우리는이 구조가 어떻게 확장 가능한지 볼 수 있습니다. 우리는 연산을 위해 인터프리터 객체에 메소드를 추가 할 수 있습니다(컴파일러가 잘 명령어 세트를 만들어 준다는 가정하에).</p><h3 id="변수">변수</h3><p>다음으로 인터프리터에 변수를 추가해 보겠습니다. 변수에는 변수 값을 저장하기위한 명령어 <code class="language-plaintext highlighter-rouge">STORE_NAME</code>가 필요합니다 .</p><p>변수 이름에서 값으로의 매핑을 검색하기 위한 명령어는 <code class="language-plaintext highlighter-rouge">LOAD_NAME</code>입니다.. 지금은 네임 스페이스와 범위를 무시하므로 인터프리터 객체 자체에 변수 매핑을 저장할 수 있습니다.</p><p>마지막으로 <code class="language-plaintext highlighter-rouge">what_to_execute</code> 상수 목록과 함께 변수 이름 목록이 있는지 확인해야합니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre><td class="rouge-code"><pre><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">s</span><span class="p">():</span>
+<span class="p">...</span>     <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="p">...</span>     <span class="n">b</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="p">...</span>     <span class="k">print</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+<span class="c1"># a friendly compiler transforms `s` into:
+</span>    <span class="n">what_to_execute</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"instructions"</span><span class="p">:</span> <span class="p">[(</span><span class="s">"LOAD_VALUE"</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s">"STORE_NAME"</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s">"LOAD_VALUE"</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s">"STORE_NAME"</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s">"LOAD_NAME"</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s">"LOAD_NAME"</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s">"ADD_TWO_VALUES"</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s">"PRINT_ANSWER"</span><span class="p">,</span> <span class="bp">None</span><span class="p">)],</span>
+        <span class="s">"numbers"</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+        <span class="s">"names"</span><span class="p">:</span>   <span class="p">[</span><span class="s">"a"</span><span class="p">,</span> <span class="s">"b"</span><span class="p">]</span> <span class="p">}</span>
+</pre></table></code></div></div><p>새로운 구현은 아래와 같습니다. 어떤 이름이 어떤 값에 바인딩되어 있는지 추적하기 위해 <code class="language-plaintext highlighter-rouge">__init__</code>메서드에 <code class="language-plaintext highlighter-rouge">dict</code>을 추가합니다.</p><p>우리는 또한 <code class="language-plaintext highlighter-rouge">STORE_NAME</code> 및 <code class="language-plaintext highlighter-rouge">LOAD_NAME</code> 추가 할 것입니다. 이러한 메서드는 먼저 해당 변수 이름을 조회 한 다음 <code class="language-plaintext highlighter-rouge">dict</code>을 사용하여 해당 값을 저장하거나 검색합니다.</p><p>명령어에 대한 인수는 이제 두 가지 다른 의미를 가질 수 있습니다. “숫자(값)” 목록에 대한 인덱스거나 “이름” 목록에 대한 인덱스 일 수 있습니다.</p><p>인터프리터는 실행중인 명령어를 확인하여 어떤 것(숫자 인덱스, 변수 매핑 인덱스)이되어야하는지 알고 있습니다. 우리는 인수가 의미하는 바에 대한 명령어 매핑을 별도의 메서드로 나눌 것입니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+</pre><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Interpreter</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">stack</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">environment</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">STORE_NAME</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">stack</span><span class="p">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">environment</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="nf">LOAD_NAME</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">environment</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">stack</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">parse_argument</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instruction</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">what_to_execute</span><span class="p">):</span>
+        <span class="s">""" Understand what the argument to each instruction means."""</span>
+        <span class="n">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="s">"LOAD_VALUE"</span><span class="p">]</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s">"LOAD_NAME"</span><span class="p">,</span> <span class="s">"STORE_NAME"</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">instruction</span> <span class="ow">in</span> <span class="n">numbers</span><span class="p">:</span>
+            <span class="n">argument</span> <span class="o">=</span> <span class="n">what_to_execute</span><span class="p">[</span><span class="s">"numbers"</span><span class="p">][</span><span class="n">argument</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">instruction</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+            <span class="n">argument</span> <span class="o">=</span> <span class="n">what_to_execute</span><span class="p">[</span><span class="s">"names"</span><span class="p">][</span><span class="n">argument</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">argument</span>
+
+    <span class="k">def</span> <span class="nf">run_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">what_to_execute</span><span class="p">):</span>
+        <span class="n">instructions</span> <span class="o">=</span> <span class="n">what_to_execute</span><span class="p">[</span><span class="s">"instructions"</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">each_step</span> <span class="ow">in</span> <span class="n">instructions</span><span class="p">:</span>
+            <span class="n">instruction</span><span class="p">,</span> <span class="n">argument</span> <span class="o">=</span> <span class="n">each_step</span>
+            <span class="n">argument</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">parse_argument</span><span class="p">(</span><span class="n">instruction</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">what_to_execute</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">instruction</span> <span class="o">==</span> <span class="s">"LOAD_VALUE"</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">LOAD_VALUE</span><span class="p">(</span><span class="n">argument</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">instruction</span> <span class="o">==</span> <span class="s">"ADD_TWO_VALUES"</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">ADD_TWO_VALUES</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">instruction</span> <span class="o">==</span> <span class="s">"PRINT_ANSWER"</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">PRINT_ANSWER</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">instruction</span> <span class="o">==</span> <span class="s">"STORE_NAME"</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">STORE_NAME</span><span class="p">(</span><span class="n">argument</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">instruction</span> <span class="o">==</span> <span class="s">"LOAD_NAME"</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">LOAD_NAME</span><span class="p">(</span><span class="n">argument</span><span class="p">)</span>
+</pre></table></code></div></div><p>5 개의 명령만으로도 <code class="language-plaintext highlighter-rouge">run_code</code> 동작이 복잡해지기 시작했습니다. 이 구조를 유지한다면 각 명령어어가 추가될수록 <code class="language-plaintext highlighter-rouge">if</code>문 분기가 계속해서 추가될 것입니다.</p><p>여기에서 Python의 동적 메서드 조회를 사용할 수 있습니다. 우리는 항상라는 <code class="language-plaintext highlighter-rouge">FOO</code>명령을 실행하기 위해 호출되는 메서드를 정의 할 <code class="language-plaintext highlighter-rouge">FOO</code>것이므로 Python의 함수 <code class="language-plaintext highlighter-rouge">getattr</code>를 사용하여 즉시 메서드를 조회 할 수 있습니다.</p><p>그러면 <code class="language-plaintext highlighter-rouge">run_code</code> 방법은 다음과 같습니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre><td class="rouge-code"><pre>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">what_to_execute</span><span class="p">):</span>
+        <span class="n">instructions</span> <span class="o">=</span> <span class="n">what_to_execute</span><span class="p">[</span><span class="s">"instructions"</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">each_step</span> <span class="ow">in</span> <span class="n">instructions</span><span class="p">:</span>
+            <span class="n">instruction</span><span class="p">,</span> <span class="n">argument</span> <span class="o">=</span> <span class="n">each_step</span>
+            <span class="n">argument</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">parse_argument</span><span class="p">(</span><span class="n">instruction</span><span class="p">,</span> <span class="n">argument</span><span class="p">,</span> <span class="n">what_to_execute</span><span class="p">)</span>
+            <span class="n">bytecode_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instruction</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">argument</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">bytecode_method</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">bytecode_method</span><span class="p">(</span><span class="n">argument</span><span class="p">)</span>
+</pre></table></code></div></div><h2 id="실제-파이썬-바이트-코드">실제 파이썬 바이트 코드</h2><p>이 시점에서 장난감 명령어 세트를 버리고 실제 Python 바이트 코드로 전환합니다. 바이트 코드의 구조는 각 명령어를 식별하기 위해 긴 이름 대신 1 바이트를 사용한다는 점을 제외하면 위에서 구현한 인터프리터의 자세한 명령어 세트와 유사합니다.</p><p>구조를 이해하기 위해 짧은 함수의 바이트 코드를 살펴 보겠습니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre><td class="rouge-code"><pre><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">cond</span><span class="p">():</span>
+<span class="p">...</span>     <span class="n">x</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="p">...</span>     <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+<span class="p">...</span>         <span class="k">return</span> <span class="s">'yes'</span>
+<span class="p">...</span>     <span class="k">else</span><span class="p">:</span>
+<span class="p">...</span>         <span class="k">return</span> <span class="s">'no'</span>
+<span class="p">...</span>
+</pre></table></code></div></div><p>Python은 런타임에 내부 적재(구현?)를 노출하며 REPL에서 바로 액세스 할 수 있습니다.</p><p>함수 객체 <code class="language-plaintext highlighter-rouge">cond</code>의 <code class="language-plaintext highlighter-rouge">cond.__code__</code>는 <code class="language-plaintext highlighter-rouge">cond</code>의 코드 객체입니다. <code class="language-plaintext highlighter-rouge">cond.__code__.co_code</code>는 바이트 코드입니다.</p><p>Python 코드를 작성할 때 이러한 속성을 직접 사용하는 경우는 거의 없지만 이해하기 위해 내부를 살펴볼 수 필요가 있습니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre><td class="rouge-code"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">cond</span><span class="p">.</span><span class="n">__code__</span>
+<span class="o">&lt;</span><span class="n">code</span> <span class="nb">object</span> <span class="n">cond</span> <span class="n">at</span> <span class="mh">0x10f6814b0</span><span class="p">,</span> <span class="nb">file</span> <span class="s">"/Users/gim-uichan/study/python/interpreter/cond.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="o">&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">cond</span><span class="p">.</span><span class="n">__code__</span><span class="p">.</span><span class="n">co_code</span>  <span class="c1"># the bytecode as raw bytes
+</span><span class="sa">b</span><span class="s">'d</span><span class="se">\x01\x00</span><span class="s">}</span><span class="se">\x00\x00</span><span class="s">|</span><span class="se">\x00\x00</span><span class="s">d</span><span class="se">\x02\x00</span><span class="s">k</span><span class="se">\x00\x00</span><span class="s">r</span><span class="se">\x16\x00</span><span class="s">d</span><span class="se">\x03\x00</span><span class="s">Sd</span><span class="se">\x04\x00</span><span class="s">Sd</span><span class="se">\x00</span><span class="s">
+   </span><span class="se">\x00</span><span class="s">S'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">list</span><span class="p">(</span><span class="n">cond</span><span class="p">.</span><span class="n">__code__</span><span class="p">.</span><span class="n">co_code</span><span class="p">)</span>  <span class="c1"># the bytecode as numbers
+</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">125</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">124</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">107</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">114</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> 
+ <span class="mi">100</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">83</span><span class="p">]</span>
+</pre></table></code></div></div><p>바이트 코드를 출력해보면 사람이 이해하기 힘듭니다. 우리가 알 수 있는 것은 일련의 바이트라는 것뿐입니다.</p><p>다행히도 이를 이해하는 데 사용할 수 있는 Python 표준 라이브러리의 <code class="language-plaintext highlighter-rouge">dis</code>라는 모듈이 있습니다.</p><p><code class="language-plaintext highlighter-rouge">dis</code>는 바이트 코드 디스어셈블러입니다.</p><p>디스어셈블러는 어셈블리 코드 또는 바이트 코드와 같은 기계용으로 작성된 저수준 코드를 가져와 사람이 읽을 수 있는 방식으로 출력합니다.</p><p><code class="language-plaintext highlighter-rouge">dis.dis</code>를 실행하면 전달된 바이트 코드에 대한 설명이 출력됩니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre><td class="rouge-code"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">dis</span><span class="p">.</span><span class="n">dis</span><span class="p">(</span><span class="n">cond</span><span class="p">)</span>
+  <span class="mi">2</span>           <span class="mi">0</span> <span class="n">LOAD_CONST</span>               <span class="mi">1</span> <span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+              <span class="mi">2</span> <span class="n">STORE_FAST</span>               <span class="mi">0</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+  <span class="mi">3</span>           <span class="mi">4</span> <span class="n">LOAD_FAST</span>                <span class="mi">0</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span>
+              <span class="mi">6</span> <span class="n">LOAD_CONST</span>               <span class="mi">2</span> <span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+              <span class="mi">8</span> <span class="n">COMPARE_OP</span>               <span class="mi">0</span> <span class="p">(</span><span class="o">&lt;</span><span class="p">)</span>
+             <span class="mi">10</span> <span class="n">POP_JUMP_IF_FALSE</span>       <span class="mi">16</span>
+
+  <span class="mi">4</span>          <span class="mi">12</span> <span class="n">LOAD_CONST</span>               <span class="mi">3</span> <span class="p">(</span><span class="s">'yes'</span><span class="p">)</span>
+             <span class="mi">14</span> <span class="n">RETURN_VALUE</span>
+
+  <span class="mi">5</span>     <span class="o">&gt;&gt;</span>   <span class="mi">16</span> <span class="n">LOAD_CONST</span>               <span class="mi">4</span> <span class="p">(</span><span class="s">'no'</span><span class="p">)</span>
+             <span class="mi">18</span> <span class="n">RETURN_VALUE</span>
+</pre></table></code></div></div><p>출력에 대한 의미</p><ul><li>첫 번째 명령어 <code class="language-plaintext highlighter-rouge">LOAD_CONST</code>에서 첫 번째 열 (2)의 숫자는 Python 소스 코드의 줄 번호를 나타냅니다.<li>두 번째 열은 바이트 코드에 대한 인덱스로, <code class="language-plaintext highlighter-rouge">LOAD_CONST</code> 명령어가 위치 0 에 있음을 알려줍니다.<li>세 번째 열은 사람이 읽을 수있는 이름에 매핑 된 명령어 자체입니다.<li>네 번째 열이 있으면 해당 명령어에 대한 인수입니다.<li>다섯 번째 열이있는 경우 인수가 의미하는 바에 대한 힌트입니다.</ul><p><code class="language-plaintext highlighter-rouge">[100, 1, 0, 125, 0, 0]</code> 이 6 바이트는 인수가 있는 두 개의 명령어를 나타냅니다.</p><p><code class="language-plaintext highlighter-rouge">dis.opname</code>을 통해 100과 125가 매핑되는 명령어를 알아낼 수 있습니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">dis</span><span class="p">.</span><span class="n">opname</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span>
+<span class="s">'LOAD_CONST'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dis</span><span class="p">.</span><span class="n">opname</span><span class="p">[</span><span class="mi">125</span><span class="p">]</span>
+<span class="s">'STORE_FAST'</span>
+</pre></table></code></div></div><p>두 번째 및 세 번째 바이트 (1, 0)는 <code class="language-plaintext highlighter-rouge">LOAD_CONST</code>에 대한 인수입니다.</p><p>다섯 번째 및 여섯 번째 바이트 (0, 0)는 <code class="language-plaintext highlighter-rouge">STORE_FAST</code>에 대한 인수입니다.</p><p>small interpreter 예제와 마찬가지로 <code class="language-plaintext highlighter-rouge">LOAD_CONST</code> 는 로드 할 상수를 찾을 위치를 알아야하고 <code class="language-plaintext highlighter-rouge">STORE_FAST</code>는 저장할 이름을 찾아야합니다.</p><p>(Python <code class="language-plaintext highlighter-rouge">LOAD_CONST</code>은 장난감 인터프리터 <code class="language-plaintext highlighter-rouge">LOAD_VALUE</code>와 동일하며 <code class="language-plaintext highlighter-rouge">LOAD_FAST</code>은 <code class="language-plaintext highlighter-rouge">LOAD_NAME</code>과 동일합니다.) 따라서 이 6 바이트는 코드의 첫 줄 <code class="language-plaintext highlighter-rouge">x = 3</code>을 나타냅니다.</p><p><strong>인수가 2 바이트인 이유</strong></p><ul><li>Python이 상수와 이름을 찾기 위해 2개 대신 1byte 만 사용했다면 단일 코드 객체와 연관된 256개의 <code class="language-plaintext highlighter-rouge">변수명/상수</code>만 가질 수 있습니다.<li>2 바이트를 사용하면 최대 256 제곱(65,536)을 가질 수 있습니다.</ul><blockquote><p>Python3 환경에서는 4 바이트입니다. <a href="https://docs.python.org/3/library/dis.html"><code class="language-plaintext highlighter-rouge">Python 3.6</code> 이후 <strong>각 명령어는 2byte를 사용</strong>하도록 바뀌었습니다.</a> Changed in version 3.6: Use 2 bytes for each instruction. Previously the number of bytes varied by instruction. <code class="language-plaintext highlighter-rouge">print(list(cond.__code__.co_code))</code> [<strong>100</strong>, 1, <strong>125</strong>, 0, 124, 0, 100, 2, 107, 0, 114, 16, 100, 3, 83, 0, 100, 4, 83, 0]</p></blockquote><h3 id="조건부-및-루프">조건부 및 루프</h3><p>지금까지 인터프리터는 명령을 하나씩 단계별로 실행하여 코드를 실행했습니다.</p><p>프로그래밍을 하다 보면 특정 명령을 여러 번 실행하거나 특정 조건에서 건너 뛰기야 하는 경우가 있습니다.</p><p>코드에서 루프와 <code class="language-plaintext highlighter-rouge">if</code> 문을 작성할 수 있으려면 인터프리터가 명령어 세트를 이동할 수 있어야합니다. 어떤 의미에서 파이썬은 바이트 코드의 <code class="language-plaintext highlighter-rouge">GOTO</code>문으로 루프와 조건을 처리합니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre><td class="rouge-code"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">dis</span><span class="p">.</span><span class="n">dis</span><span class="p">(</span><span class="n">cond</span><span class="p">)</span>
+  <span class="mi">2</span>           <span class="mi">0</span> <span class="n">LOAD_CONST</span>               <span class="mi">1</span> <span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+              <span class="mi">2</span> <span class="n">STORE_FAST</span>               <span class="mi">0</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+  <span class="mi">3</span>           <span class="mi">4</span> <span class="n">LOAD_FAST</span>                <span class="mi">0</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span>
+              <span class="mi">6</span> <span class="n">LOAD_CONST</span>               <span class="mi">2</span> <span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+              <span class="mi">8</span> <span class="n">COMPARE_OP</span>               <span class="mi">0</span> <span class="p">(</span><span class="o">&lt;</span><span class="p">)</span>
+             <span class="mi">10</span> <span class="n">POP_JUMP_IF_FALSE</span>       <span class="mi">16</span>
+
+  <span class="mi">4</span>          <span class="mi">12</span> <span class="n">LOAD_CONST</span>               <span class="mi">3</span> <span class="p">(</span><span class="s">'yes'</span><span class="p">)</span>
+             <span class="mi">14</span> <span class="n">RETURN_VALUE</span>
+
+  <span class="mi">5</span>     <span class="o">&gt;&gt;</span>   <span class="mi">16</span> <span class="n">LOAD_CONST</span>               <span class="mi">4</span> <span class="p">(</span><span class="s">'no'</span><span class="p">)</span>
+             <span class="mi">18</span> <span class="n">RETURN_VALUE</span>
+</pre></table></code></div></div><p>조건부 코드 라인 3 <code class="language-plaintext highlighter-rouge">if x &lt; 5</code>은 네 개의 명령어 <code class="language-plaintext highlighter-rouge">LOAD_FAST</code>, <code class="language-plaintext highlighter-rouge">LOAD_CONST</code>, <code class="language-plaintext highlighter-rouge">COMPARE_OP</code>와 <code class="language-plaintext highlighter-rouge">POP_JUMP_IF_FALSE</code>로 컴파일됩니다.</p><p><code class="language-plaintext highlighter-rouge">x &lt; 5</code>는 로드 x, 로드 5 및 두 값을 비교하는 코드를 생성합니다.</p><p><code class="language-plaintext highlighter-rouge">POP_JUMP_IF_FALSE</code> 명령어는 인터프리터 스택에서 최상위 값을 확인하고 값이 참이면 아무 일도 일어나지 않습니다. 값이 <code class="language-plaintext highlighter-rouge">False</code>이면 인터프리터는 다른 명령어로 이동합니다.</p><p><code class="language-plaintext highlighter-rouge">POP_JUMP</code> 명령의 인수를 점프 대상이라고 합니다. 여기서 점프 대상은 16입니다.</p><p>건너뛸 명령어 <code class="language-plaintext highlighter-rouge">LOAD_CONST</code>의 인덱스 16는 10 행에 있습니다. ( <code class="language-plaintext highlighter-rouge">dis</code>는 점프 대상에 <code class="language-plaintext highlighter-rouge">&gt;&gt;</code> 표시합니다.)</p><p>결과 <code class="language-plaintext highlighter-rouge">x &lt; 5</code>가 <code class="language-plaintext highlighter-rouge">False</code>이면 인터프리터는 6행 (<code class="language-plaintext highlighter-rouge">return "no"</code>)으로 곧 바로 건너 뛰고 4 행 (<code class="language-plaintext highlighter-rouge">return "yes"</code>)을 건너 뜁니다.</p><p>인터프리터는 점프 명령어를 사용하여 명령어 세트의 일부를 건너뛸 수 있습니다.</p><p>파이썬 루프도 점프에 의존합니다. 아래의 바이트 코드에서 라인 <code class="language-plaintext highlighter-rouge">while x &lt; 5</code>, <code class="language-plaintext highlighter-rouge">if x &lt; 10</code> 두 경우가 그렇습니다.</p><p>비교 계산 <code class="language-plaintext highlighter-rouge">POP_JUMP_IF_FALSE</code>된 다음 다음에 실행될 명령어를 제어합니다.</p><p>바이트코드 22행에서 <code class="language-plaintext highlighter-rouge">JUMP_ABSOLUTE</code>을 통해 인터프리터를 루프 맨 위에있는 6행으로 다시 보냅니다.</p><p><code class="language-plaintext highlighter-rouge">x &lt; 5</code>가 거짓이되면 <code class="language-plaintext highlighter-rouge">POP_JUMP_IF_FALSE</code> 인터프리터가 루프 끝을 지나 24행으로 이동합니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre><td class="rouge-code"><pre><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">loop</span><span class="p">():</span>
+<span class="p">...</span>      <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="p">...</span>      <span class="k">while</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+<span class="p">...</span>          <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="p">...</span>      <span class="k">return</span> <span class="n">x</span>
+<span class="p">...</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dis</span><span class="p">.</span><span class="n">dis</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
+  <span class="mi">2</span>           <span class="mi">0</span> <span class="n">LOAD_CONST</span>               <span class="mi">1</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+              <span class="mi">2</span> <span class="n">STORE_FAST</span>               <span class="mi">0</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+  <span class="mi">3</span>           <span class="mi">4</span> <span class="n">SETUP_LOOP</span>              <span class="mi">20</span> <span class="p">(</span><span class="n">to</span> <span class="mi">26</span><span class="p">)</span>
+        <span class="o">&gt;&gt;</span>    <span class="mi">6</span> <span class="n">LOAD_FAST</span>                <span class="mi">0</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span>
+              <span class="mi">8</span> <span class="n">LOAD_CONST</span>               <span class="mi">2</span> <span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+             <span class="mi">10</span> <span class="n">COMPARE_OP</span>               <span class="mi">0</span> <span class="p">(</span><span class="o">&lt;</span><span class="p">)</span>
+             <span class="mi">12</span> <span class="n">POP_JUMP_IF_FALSE</span>       <span class="mi">24</span>
+
+  <span class="mi">4</span>          <span class="mi">14</span> <span class="n">LOAD_FAST</span>                <span class="mi">0</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span>
+             <span class="mi">16</span> <span class="n">LOAD_CONST</span>               <span class="mi">1</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+             <span class="mi">18</span> <span class="n">BINARY_ADD</span>
+             <span class="mi">20</span> <span class="n">STORE_FAST</span>               <span class="mi">0</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span>
+             <span class="mi">22</span> <span class="n">JUMP_ABSOLUTE</span>            <span class="mi">6</span>
+        <span class="o">&gt;&gt;</span>   <span class="mi">24</span> <span class="n">POP_BLOCK</span>
+
+  <span class="mi">5</span>     <span class="o">&gt;&gt;</span>   <span class="mi">26</span> <span class="n">LOAD_FAST</span>                <span class="mi">0</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span>
+             <span class="mi">28</span> <span class="n">RETURN_VALUE</span>
+</pre></table></code></div></div><h2 id="프레임">프레임</h2><p>지금까지 Python 가상 머신이 스택 머신이라는 것을 배웠습니다. 명령어를 단계별로 이동하고 스택에서 값을 <code class="language-plaintext highlighter-rouge">push</code>하고 <code class="language-plaintext highlighter-rouge">pop</code>합니다.</p><p>위의 예에서 마지막 명령어는 코드 <code class="language-plaintext highlighter-rouge">RETURN_VALUE</code>의 <code class="language-plaintext highlighter-rouge">return</code>문에 의문이 들 것입니다.</p><p>이 질문에 답하려면 복잡한 계층인 프레임을 추가해야합니다. 프레임은 코드 청크에 대한 정보 및 컨텍스트의 모음입니다.</p><p>프레임은 Python 코드가 실행됨에 따라 즉시 생성 및 소멸됩니다. 각 함수 호출에 해당하는 하나의 프레임이 있습니다. 따라서 각 프레임에는 하나의 코드 객체가 연결되어 있지만 코드 객체에는 여러 프레임이 있을 수 있습니다. 자신을 10번 재귀적으로 호출하는 함수가 있다면 11 개의 프레임을 갖게됩니다.</p><p>각 재귀 수준에 대해 하나씩, 시작한 모듈에 대해 하나씩 입니다. 일반적으로 Python 프로그램에는 각 범위에 대한 프레임이 있습니다. 예를 들어, 각 모듈, 각 함수 호출 및 각 클래스 정의에는 프레임이 있습니다.</p><p>프레임은 지금까지 논의한 스택과 완전히 다른 스택인 호출 스택에 있습니다. (호출 스택은 이미 많이 보아온 스택일 것입니다. 예외의 트레이스 백에 출력된 것을 보셨을 것입니다. <code class="language-plaintext highlighter-rouge">File 'program.py', line 10</code>으로 시작하는 트레이스 백의 각 라인은 한 프레임에 해당합니다.)</p><p>우리가 살펴본 스택 (인터프리터가 바이트 코드를 실행하는 동안 조작하는 스택)을 데이터 스택 이라고 부릅니다. 블록 스택이라는 세 번째 스택도 있습니다.</p><p>블록은 특정 종류의 제어 흐름, 특히 루핑 및 예외 처리에 사용됩니다. 호출 스택의 각 프레임에는 각각의 데이터 스택과 블록 스택이 있습니다.</p><p>구체적으로 설명하자면, 파이썬 인터프리터가 현재 아래 3번째 라인을 실행하고 있다고 가정합니다.</p><p>인터프리터에서 <code class="language-plaintext highlighter-rouge">foo</code> 호출의 중간에 <code class="language-plaintext highlighter-rouge">bar</code> 호출이 있습니다. 이 다이어그램은 프레임, 블록 스택 및 데이터 스택의 호출 스택의 개략도를 보여줍니다.</p><p><code class="language-plaintext highlighter-rouge">foo()</code>맨 아래에서를 실행 한 다음 <code class="language-plaintext highlighter-rouge">foo</code>의 본문에 도달한 다음 <code class="language-plaintext highlighter-rouge">bar</code>에 도달합니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre><td class="rouge-code"><pre><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+<span class="p">...</span>     <span class="n">z</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">3</span>     <span class="c1"># &lt;--- (3) ... and the interpreter is here.
+</span><span class="p">...</span>     <span class="k">return</span> <span class="n">z</span>
+<span class="p">...</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+<span class="p">...</span>     <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="p">...</span>     <span class="n">b</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="p">...</span>     <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">bar</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="c1"># &lt;--- (2) ... which is returning a call to bar ...
+</span><span class="p">...</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">foo</span><span class="p">()</span>             <span class="c1"># &lt;--- (1) We're in the middle of a call to foo ...
+</span><span class="mi">3</span>
+</pre></table></code></div></div><p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7 " data-src="https://www.aosabook.org/en/500L/interpreter-images/interpreter-callstack.png" alt="interpreter-callstack.png" /></p><p>이 시점에서 인터프리터는 <code class="language-plaintext highlighter-rouge">bar</code>에 대한 함수 호출의 중간에 있습니다. 호출 스택에는 3개의 프레임이 있습니다. 하나는 모듈 레벨 용, 하나는 함수 <code class="language-plaintext highlighter-rouge">foo</code>용, 다른 하나는 <code class="language-plaintext highlighter-rouge">bar</code> 용입니다. <code class="language-plaintext highlighter-rouge">bar</code>가 반환되면 이와 관련된 프레임이 호출 스택에서 <code class="language-plaintext highlighter-rouge">pop</code>되고 사라집니다.</p><ul><li>바이트 코드 명령어 <code class="language-plaintext highlighter-rouge">RETURN_VALUE</code>는 인터프리터에게 프레임간에 값을 전달하도록 지시합니다.<li>호출 스택에 있는 최상위 프레임(현재 실행중인 프레임)의 데이터 스택에서 최상위 값을 <code class="language-plaintext highlighter-rouge">pop</code>합니다.<li>전체 프레임을 호출 스택에서 꺼내어 버립니다. 마지막으로 값은 다음 프레임에서 데이터 스택으로 푸시됩니다.</ul><p>Ned Batchelder와 제가 Byterun을 작업 할 때 오랫동안 구현에 심각한 오류가있었습니다. 각 프레임에 하나의 데이터 스택이 있는 대신 전체 가상 머신에 하나의 데이터 스택만 있었습니다. 우리는 Byterun과 실제 Python 인터프리터를 통해 실행한 작은 Python 코드 조각으로 구성된 수십 개의 테스트를 통해 두 인터프리터에서 동일한 일이 발생했는지 확인했습니다. 거의 모든 테스트가 통과되었습니다. 우리가 작동 할 수 없는 유일한 것은 <code class="language-plaintext highlighter-rouge">generator</code>였습니다. 마지막으로 CPython 코드를 더 주의 깊게 읽으면서 실수를 깨달았습니다. 데이터 스택을 각 프레임으로 이동하면 문제가 해결되었습니다.</p><p>이 버그를 되돌아 보면, 서로 다른 데이터 스택을 가진 각 프레임에 파이썬이 거의 의존하지 않는 것에 놀랐습니다. Python 인터프리터의 거의 모든 작업은 데이터 스택을 신중하게 정리하므로 프레임이 동일한 스택을 공유한다는 사실은 중요하지 않습니다. 위의 예에서 <code class="language-plaintext highlighter-rouge">bar</code> 실행이 완료 되면 데이터 스택을 비워 둡니다. <code class="language-plaintext highlighter-rouge">foo</code> 동일한 스택을 공유 하더라도 값은 낮아집니다. 그러나 제너레이터의 핵심 기능은 프레임을 일시 중지하고 다른 프레임으로 돌아간 다음 나중에 제너레이터 프레임으로 돌아가서 그대로 두었을 때와 똑같은 상태로 유지하는 기능입니다.</p><p>추가적인 내용은 <code class="language-plaintext highlighter-rouge">Byterun</code>의 구현임으로 본 포스팅에서는 다루지 않겠습니다.</p><h4 id="참고자료">참고자료</h4><p><a href="https://towardsdatascience.com/how-does-python-work-6f21fd197888">How does Python work?. A simple explanation of how Python code… | by Dhruvil Karani | Towards Data Science</a></p></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw mr-1"></i> <a href='/categories/programming/'>programming</a>, <a href='/categories/python/'>python</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw mr-1"></i> <a href="/tags/python/" class="post-tag no-text-decoration" >python</a></div><div class="post-tail-bottom d-flex justify-content-between align-items-center mt-3 pt-5 pb-2"><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> by the author.</div><div class="share-wrapper"> <span class="share-label text-muted mr-1">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=Python Interpreter - 잡잡 블로그&url=https://kimeuichan.github.io/posts/python-interpreter/" data-toggle="tooltip" data-placement="top" title="Twitter" target="_blank" rel="noopener" aria-label="Twitter"> <i class="fa-fw fab fa-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=Python Interpreter - 잡잡 블로그&u=https://kimeuichan.github.io/posts/python-interpreter/" data-toggle="tooltip" data-placement="top" title="Facebook" target="_blank" rel="noopener" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://telegram.me/share?text=Python Interpreter - 잡잡 블로그&url=https://kimeuichan.github.io/posts/python-interpreter/" data-toggle="tooltip" data-placement="top" title="Telegram" target="_blank" rel="noopener" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <i class="fa-fw fas fa-link small" onclick="copyLink()" data-toggle="tooltip" data-placement="top" title="Copy link"></i> </span></div></div></div></div></div><div id="panel-wrapper" class="col-xl-3 pl-2 text-muted topbar-down"><div class="access"><div id="access-lastmod" class="post"> <span>Recent Update</span><ul class="post-content pl-0 pb-1 ml-1 mt-2"><li><a href="/posts/deploy-docker-more-faster/">자주 변경되는 도커 이미지 빠르게 배포하기 (feat. 이미지 사이즈)</a><li><a href="/posts/python-asyncio/">Python에서 asyncio의 동작</a><li><a href="/posts/python-logging-with-loguru/">loguru를 사용하여 python 로깅 쉽게하기</a><li><a href="/posts/asnycio-with-blocing-task/">Asyncio에서 동기 라이브러리 사용하기(feat.태스크와 코루틴)</a></ul></div><div id="access-tags"> <span>Trending Tags</span><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/python/">python</a> <a class="post-tag" href="/tags/concurrency/">concurrency</a> <a class="post-tag" href="/tags/asyncio/">asyncio</a> <a class="post-tag" href="/tags/docker/">docker</a> <a class="post-tag" href="/tags/async/">async</a> <a class="post-tag" href="/tags/celery/">celery</a> <a class="post-tag" href="/tags/parallel/">parallel</a> <a class="post-tag" href="/tags/rabbitmq/">rabbitmq</a></div></div></div><div id="toc-wrapper" class="pl-0 pr-4 mb-5"> <span class="pl-3 pt-2 mb-2">Contents</span><nav id="toc" data-toggle="toc"></nav></div></div></div><div class="row"><div class="col-12 col-lg-11 col-xl-8"><div id="post-extend-wrapper" class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><div id="related-posts" class="mt-5 mb-2 mb-sm-4"><h3 class="pt-2 mt-1 mb-4 ml-1" data-toc-skip>Further Reading</h3><div class="card-deck mb-4"><div class="card"> <a href="/posts/python-asyncio/"><div class="card-body"> <span class="timeago small" > Nov 9, 2020 <i class="unloaded">2020-11-09T06:00:00+09:00</i> </span><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Python에서 asyncio의 동작</h3><div class="text-muted small"><p> python - How does asyncio actually work? - Stack Overflow 해당글을 번역한 글입니다. 파이썬에서 asnyc는 coroutine을 기반으로 동작합니다. coroutine의 동작을 이해하기 전 generator의 개념을 알고가면 이해하기 쉽기 때문에 먼저 generator 개념 부터 설명하겠습니다. Gen...</p></div></div></a></div><div class="card"> <a href="/posts/python-celery/"><div class="card-body"> <span class="timeago small" > Nov 15, 2020 <i class="unloaded">2020-11-15T06:00:00+09:00</i> </span><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Python Celery란</h3><div class="text-muted small"><p> 해당 글은 celery를 이용하여 코드를 잘 작성하는것에 비중을 둔 글이 아니라 간단한 celery 소개 및 특징과 broker에 대해 공부하기 위해 작성한 글입니다. Celery는 python 동시성 프로그래밍에서 가장 많이 사용되는 방법 중 하나입니다. 몇 가지 설정만 한다면 간단하게 python 코드를 실행하는 worker를 만들 ...</p></div></div></a></div><div class="card"> <a href="/posts/python-gil/"><div class="card-body"> <span class="timeago small" > Nov 20, 2020 <i class="unloaded">2020-11-20T06:00:00+09:00</i> </span><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Python의 GIL</h3><div class="text-muted small"><p> 해당글은 What Is the Python Global Interpreter Lock (GIL)? – Real Python을 번역 및 정리한 포스팅입니다. GIL이란 Global Interpreter Lock의 약자입니다. 한 쓰레드만을 사용해 파이썬 인터프리터를 제어하게 하는 mutex(or lock) 입니다. 어느 시점에서든 하나의 스레드 만 ...</p></div></div></a></div></div></div><div class="post-navigation d-flex justify-content-between"> <a href="/posts/python-gil/" class="btn btn-outline-primary"><p>Python의 GIL</p></a> <a href="/posts/asnycio-with-blocing-task/" class="btn btn-outline-primary"><p>Asyncio에서 동기 라이브러리 사용하기(feat.태스크와 코루틴)</p></a></div></div></div></div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lozad/dist/lozad.min.js"></script> <script type="text/javascript"> const imgs = document.querySelectorAll('#post-wrapper img'); const observer = lozad(imgs); observer.observe(); </script><footer class="d-flex w-100 justify-content-center"><div class="d-flex justify-content-between align-items-center"><div class="footer-left"><p class="mb-0"> © 2021 <a href="https://github.com/kimeuichan">Euichan Kim</a>. <span data-toggle="tooltip" data-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author.">Some rights reserved.</span></p></div><div class="footer-right"><p class="mb-0"> Powered by <a href="https://jekyllrb.com" target="_blank" rel="noopener">Jekyll</a> with <a href="https://github.com/cotes2020/jekyll-theme-chirpy/" target="_blank" rel="noopener">Chirpy</a> theme.</p></div></div></footer></div><div id="search-result-wrapper" class="d-flex justify-content-center unloaded"><div class="col-12 col-xl-11 post-content"><div id="search-hints"><h4 class="text-muted mb-4">Trending Tags</h4><a class="post-tag" href="/tags/python/">python</a> <a class="post-tag" href="/tags/concurrency/">concurrency</a> <a class="post-tag" href="/tags/asyncio/">asyncio</a> <a class="post-tag" href="/tags/docker/">docker</a> <a class="post-tag" href="/tags/async/">async</a> <a class="post-tag" href="/tags/celery/">celery</a> <a class="post-tag" href="/tags/parallel/">parallel</a> <a class="post-tag" href="/tags/rabbitmq/">rabbitmq</a></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><div id="mask"></div><a id="back-to-top" href="#" aria-label="back-to-top" class="btn btn-lg btn-box-shadow" role="button"> <i class="fas fa-angle-up"></i> </a> <script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@1.7.3/dest/simple-jekyll-search.min.js"></script> <script> SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<div class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-lg-4 pr-lg-4 pl-xl-0 pr-xl-0"> <a href="https://kimeuichan.github.io{url}">{title}</a><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"><div class="mr-sm-4"><i class="far fa-folder fa-fw"></i>{categories}</div><div><i class="fa fa-tag fa-fw"></i>{tags}</div></div><p>{snippet}</p></div>', noResultsText: '<p class="mt-5">Oops! No result founds.</p>' }); </script> <script async src="https://www.googletagmanager.com/gtag/js?id="></script> <script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', ''); </script>

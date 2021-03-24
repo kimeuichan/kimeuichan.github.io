@@ -1,0 +1,223 @@
+<!DOCTYPE html><html lang="en" mode="light" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta name="theme" content="Chirpy v2.5.1"><meta name="google-site-verification" content="ADnLC0IeVgMa6OjbbqiE36ym_6ZmRiyEYXoege314pM" /><meta name="generator" content="Jekyll v4.2.0" /><meta property="og:title" content="Python에서 asyncio의 동작" /><meta name="author" content="daru" /><meta property="og:locale" content="en_US" /><meta name="description" content="python - How does asyncio actually work? - Stack Overflow" /><meta property="og:description" content="python - How does asyncio actually work? - Stack Overflow" /><link rel="canonical" href="https://kimeuichan.github.io/posts/python-asyncio/" /><meta property="og:url" content="https://kimeuichan.github.io/posts/python-asyncio/" /><meta property="og:site_name" content="잡잡 블로그" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2020-11-09T06:00:00+09:00" /><meta name="google-site-verification" content="google_meta_tag_verification" /> <script type="application/ld+json"> {"author":{"@type":"Person","name":"daru"},"description":"python - How does asyncio actually work? - Stack Overflow","mainEntityOfPage":{"@type":"WebPage","@id":"https://kimeuichan.github.io/posts/python-asyncio/"},"@type":"BlogPosting","url":"https://kimeuichan.github.io/posts/python-asyncio/","headline":"Python에서 asyncio의 동작","dateModified":"2020-11-09T06:00:00+09:00","datePublished":"2020-11-09T06:00:00+09:00","@context":"https://schema.org"}</script><title>Python에서 asyncio의 동작 | 잡잡 블로그</title><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico" type="image/x-icon"><link rel="icon" href="/assets/img/favicons/favicon.ico" type="image/x-icon"><link rel="apple-touch-icon" href="/assets/img/favicons/apple-icon.png"><link rel="apple-touch-icon" href="/assets/img/favicons/apple-icon-precomposed.png"><link rel="apple-touch-icon" sizes="57x57" href="/assets/img/favicons/apple-icon-57x57.png"><link rel="apple-touch-icon" sizes="60x60" href="/assets/img/favicons/apple-icon-60x60.png"><link rel="apple-touch-icon" sizes="72x72" href="/assets/img/favicons/apple-icon-72x72.png"><link rel="apple-touch-icon" sizes="76x76" href="/assets/img/favicons/apple-icon-76x76.png"><link rel="apple-touch-icon" sizes="114x114" href="/assets/img/favicons/apple-icon-114x114.png"><link rel="apple-touch-icon" sizes="120x120" href="/assets/img/favicons/apple-icon-120x120.png"><link rel="apple-touch-icon" sizes="144x144" href="/assets/img/favicons/apple-icon-144x144.png"><link rel="apple-touch-icon" sizes="152x152" href="/assets/img/favicons/apple-icon-152x152.png"><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-icon-180x180.png"><link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicons/android-icon-192x192.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="96x96" href="/assets/img/favicons/favicon-96x96.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png"><link rel="manifest" href="/assets/img/favicons/manifest.json"><meta name='msapplication-config' content='/assets/img/favicons/browserconfig.xml'><meta name="msapplication-TileColor" content="#ffffff"><meta name="msapplication-TileImage" content="/assets/img/favicons/ms-icon-144x144.png"><meta name="theme-color" content="#ffffff"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"><link rel="dns-prefetch" href="https://fonts.gstatic.com"><link rel="preconnect" href="https://www.google-analytics.com" crossorigin="use-credentials"><link rel="dns-prefetch" href="https://www.google-analytics.com"><link rel="preconnect" href="https://www.googletagmanager.com" crossorigin="anonymous"><link rel="dns-prefetch" href="https://www.googletagmanager.com"><link rel="preconnect" href="cdn.jsdelivr.net"><link rel="dns-prefetch" href="cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha256-LA89z+k9fjgMKQ/kq4OO2Mrf8VltYml/VES+Rg0fh20=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.11.2/css/all.min.css" integrity="sha256-+N4/V/SbAFiW1MPBCXnfnP9QSN3+Keu+NlB+0ev/YKQ=" crossorigin="anonymous"><link rel="preload" as="style" href="/assets/css/post.css"><link rel="stylesheet" href="/assets/css/post.css"><link rel="preload" as="style" href="/assets/css/lib/bootstrap-toc.min.css"><link rel="stylesheet" href="/assets/css/lib/bootstrap-toc.min.css" /> <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script> <script async src="https://cdn.jsdelivr.net/combine/npm/popper.js@1.15.0,npm/bootstrap@4/dist/js/bootstrap.min.js"></script> <script async src="/assets/js/post.min.js"></script> <script defer src="/app.js"></script><body data-spy="scroll" data-target="#toc"><div id="sidebar" class="d-flex flex-column"><div id="nav-wrapper"><div id="profile-wrapper" class="d-flex flex-column"><div id="avatar" class="d-flex justify-content-center"> <a href="/" alt="avatar"> <img src="/assets/img/avatar.jpg" alt="avatar" onerror="this.style.display='none'"> </a></div><div class="profile-text mt-3"><div class="site-title"> <a href="/">잡잡 블로그</a></div><div class="site-subtitle font-italic">개발 및 잡다한 내용을 정리한 블로그입니다.</div></div></div><ul class="nav flex-column"><li class="nav-item d-flex justify-content-center "> <a href="/" class="nav-link d-flex justify-content-center align-items-center w-100"> <i class="fa-fw fas fa-home ml-xl-3 mr-xl-3 unloaded"></i> <span>HOME</span> </a><li class="nav-item d-flex justify-content-center "> <a href="/tabs/categories/" class="nav-link d-flex justify-content-center align-items-center w-100"> <i class="fa-fw fas fa-stream ml-xl-3 mr-xl-3 unloaded"></i> <span>CATEGORIES</span> </a><li class="nav-item d-flex justify-content-center "> <a href="/tabs/tags/" class="nav-link d-flex justify-content-center align-items-center w-100"> <i class="fa-fw fas fa-tags ml-xl-3 mr-xl-3 unloaded"></i> <span>TAGS</span> </a><li class="nav-item d-flex justify-content-center "> <a href="/tabs/archives/" class="nav-link d-flex justify-content-center align-items-center w-100"> <i class="fa-fw fas fa-archive ml-xl-3 mr-xl-3 unloaded"></i> <span>ARCHIVES</span> </a></ul></div><div class="sidebar-bottom d-flex flex-wrap justify-content-around mt-4"> <a href="https://github.com/kimeuichan" aria-label="github" target="_blank" rel="noopener"> <i class="fab fa-github-alt"></i> </a> <a href="https://twitter.com/" aria-label="twitter" target="_blank" rel="noopener"> <i class="fab fa-twitter"></i> </a> <a href=" javascript:location.href = 'mailto:' + ['eck7965','gmail.com'].join('@')" aria-label="email" > <i class="fas fa-envelope"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></div><div id="topbar-wrapper" class="row justify-content-center topbar-down"><div id="topbar" class="col-11 d-flex h-100 align-items-center justify-content-between"> <span id="breadcrumb"> <span> <a href="/"> Posts </a> </span> <span>Python에서 asyncio의 동작</span> </span> <i id="sidebar-trigger" class="fas fa-bars fa-fw"></i><div id="topbar-title"> Post</div><i id="search-trigger" class="fas fa-search fa-fw"></i> <span id="search-wrapper" class="align-items-center"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" placeholder="Search..."> <i class="fa fa-times-circle fa-fw" id="search-cleaner"></i> </span> <span id="search-cancel" >Cancel</span></div></div><div id="main-wrapper"><div id="main"><div class="row"><div id="post-wrapper" class="col-12 col-lg-11 col-xl-8"><div class="post pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><h1 data-toc-skip>Python에서 asyncio의 동작</h1><div class="post-meta text-muted d-flex flex-column"><div> Posted <span class="timeago " data-toggle="tooltip" data-placement="bottom" title="Mon, Nov 9, 2020, 6:00 AM +0900" > Nov 9, 2020 <i class="unloaded">2020-11-09T06:00:00+09:00</i> </span> by <span class="author"> daru </span></div><div> Updated <span class="timeago lastmod" data-toggle="tooltip" data-placement="bottom" title="Mon, Jan 25, 2021, 5:48 PM +0900" > Jan 25 <i class="unloaded">2021-01-25T17:48:25+09:00</i> </span></div></div><div class="post-content"><p><a href="https://stackoverflow.com/questions/49005651/how-does-asyncio-actually-work">python - How does asyncio actually work? - Stack Overflow</a></p><p>해당글을 번역한 글입니다.</p><p>파이썬에서 <code class="language-plaintext highlighter-rouge">asnyc</code>는 <code class="language-plaintext highlighter-rouge">coroutine</code>을 기반으로 동작합니다. <code class="language-plaintext highlighter-rouge">coroutine</code>의 동작을 이해하기 전 <code class="language-plaintext highlighter-rouge">generator</code>의 개념을 알고가면 이해하기 쉽기 때문에 먼저 <code class="language-plaintext highlighter-rouge">generator</code> 개념 부터 설명하겠습니다.</p><h2 id="generator">Generator</h2><p><code class="language-plaintext highlighter-rouge">generator</code>는 <code class="language-plaintext highlighter-rouge">yield</code> 문법을 사용하여 구현한 함수 형태입니다. 독특한 점은 <code class="language-plaintext highlighter-rouge">yield</code>를 통해 함수에서 다시 호출한 곳으로 제어권을 넘긴다는 점입니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+    <span class="k">yield</span> <span class="mi">1</span>
+    <span class="k">yield</span> <span class="mi">2</span>
+    <span class="k">yield</span> <span class="mi">3</span>
+    <span class="k">yield</span> <span class="mi">4</span>
+    
+<span class="n">a</span> <span class="o">=</span> <span class="n">test</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+<span class="c1">#1
+</span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+<span class="c1">#2
+</span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+<span class="c1">#3
+</span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+<span class="c1">#4
+</span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+</pre></table></code></div></div><p><code class="language-plaintext highlighter-rouge">generator</code>에서 <code class="language-plaintext highlighter-rouge">next()</code>를 호출하면 인터프리터가 <code class="language-plaintext highlighter-rouge">test</code>의 프레임을 로드하고 산출된 값을 반환합니다. <code class="language-plaintext highlighter-rouge">next()</code>를 다시 호출하면 <code class="language-plaintext highlighter-rouge">test</code> 프레임이 인터프리터 스택에 다시 로드되고 계속해서 다른 값을 산출합니다.</p><p>4번의 <code class="language-plaintext highlighter-rouge">next()</code>를 호출하면 <code class="language-plaintext highlighter-rouge">generator</code>는 <code class="language-plaintext highlighter-rouge">StopIteration</code> 예외을 발생시켜 <code class="language-plaintext highlighter-rouge">generator</code>가 끝났음을 알립니다.</p><h3 id="generator-통신하기">Generator 통신하기</h3><p><code class="language-plaintext highlighter-rouge">generator</code>은 <code class="language-plaintext highlighter-rouge">send()</code> 및 <code class="language-plaintext highlighter-rouge">throw()</code>의 두 가지 메서드를 사용하여 이들과 통신 할 수 있습니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="k">yield</span> <span class="mi">1</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="mi">2</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">test</span><span class="p">()</span>
+
+<span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+<span class="c1"># 1
+</span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+<span class="c1"># None
+# 2
+</span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+<span class="c1"># StopIteration
+</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">test</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+<span class="c1"># 1
+</span><span class="n">g</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="c1"># 123
+# 2
+</span></pre></table></code></div></div><p><code class="language-plaintext highlighter-rouge">send</code>로 값을 보내면 <code class="language-plaintext highlighter-rouge">yield</code> 문법으로 값을 돌려받는 받습니다.</p><p><code class="language-plaintext highlighter-rouge">g.throw()</code>는 <code class="language-plaintext highlighter-rouge">generator</code> 내부에서 <code class="language-plaintext highlighter-rouge">yield</code> 가 있는 위치에서 <code class="language-plaintext highlighter-rouge">Exception</code>을 던질 수 있도록 허용합니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="k">yield</span> <span class="mi">1</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="mi">2</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">test</span><span class="p">()</span>
+
+<span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+<span class="c1"># 1
+</span><span class="n">g</span><span class="p">.</span><span class="n">throw</span><span class="p">(</span><span class="nb">Exception</span><span class="p">())</span>
+<span class="c1"># Traceback (most recent call last):
+#   File "&lt;stdin&gt;", line 2, in &lt;module&gt;
+#   File "&lt;stdin&gt;", line 2, in test
+# Exception
+</span></pre></table></code></div></div><h3 id="generator로부터-반환값-받기"><code class="language-plaintext highlighter-rouge">Generator</code>로부터 반환값 받기</h3><p><code class="language-plaintext highlighter-rouge">generator</code>로부터 반환값을 받으려면 결과값은 <code class="language-plaintext highlighter-rouge">StopIteration</code> 예외 내부에서 값을 할당 받아야 한다. 나중에 예외에서 값을 복구하여 필요에 따라 사용할 수 있습니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+    <span class="k">yield</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="s">"hello"</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">test</span><span class="p">()</span>
+
+<span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+<span class="c1"># 1
+</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+<span class="k">except</span> <span class="nb">StopIteration</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="n">e</span><span class="p">.</span><span class="n">value</span>
+    <span class="c1"># hello
+</span></pre></table></code></div></div><h3 id="새로운-문법-yield-from">새로운 문법 <code class="language-plaintext highlighter-rouge">yield from</code></h3><p><code class="language-plaintext highlighter-rouge">Python3.4</code>에서 <a href="https://docs.python.org/3/reference/expressions.html#yield-expressions"><code class="language-plaintext highlighter-rouge">yield from</code></a>이라는 새로운 문법이 소개 되었다. <code class="language-plaintext highlighter-rouge">yield from</code>은 가장 안쪽의 <code class="language-plaintext highlighter-rouge">generator</code>에게 <code class="language-plaintext highlighter-rouge">next()</code>, <code class="language-plaintext highlighter-rouge">send()</code>, <code class="language-plaintext highlighter-rouge">throw()</code>를 넘겨주는 것을 할 수 있다. 만약 내부의 <code class="language-plaintext highlighter-rouge">generator</code>가 <code class="language-plaintext highlighter-rouge">return</code>했다면 <code class="language-plaintext highlighter-rouge">yield from</code>으로 인해 외부의 <code class="language-plaintext highlighter-rouge">generator</code>도 return한다</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+</pre><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">inner</span><span class="p">():</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="k">yield</span> <span class="mi">1</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="s">"done"</span>
+
+
+<span class="k">def</span> <span class="nf">outer</span><span class="p">():</span>
+    <span class="k">yield</span> <span class="mi">2</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="n">inner</span><span class="p">()</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="mi">4</span>
+
+
+<span class="n">g</span> <span class="o">=</span> <span class="n">outer</span><span class="p">()</span>
+
+<span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">g</span><span class="p">))</span>
+<span class="c1"># 2
+</span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">g</span><span class="p">))</span>
+<span class="c1"># 1
+</span><span class="n">g</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">"hello"</span><span class="p">)</span>
+<span class="c1"># hello
+# done
+</span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">g</span><span class="p">))</span>
+<span class="c1">#Traceback (most recent call last):
+#  File "/Users/gim-uichan/study/python_async/test.py", line 26, in &lt;module&gt;
+#    print(next(g))
+#StopIteration: hi
+</span></pre></table></code></div></div><h2 id="coroutine">Coroutine</h2><p><code class="language-plaintext highlighter-rouge">yield from</code>문을 사용하여 <code class="language-plaintext highlighter-rouge">generator</code>에서 터널처럼 내부 <code class="language-plaintext highlighter-rouge">generator</code>를 사용할 수 있게 되었습니다. 데이터를 가장 안쪽에서 바깥 쪽 <code class="language-plaintext highlighter-rouge">generator</code>로 앞뒤로 전달합니다. 이것은 <code class="language-plaintext highlighter-rouge">generator</code>에게 새로운 의미를 낳았습니다. 우리가 알고 있는 <code class="language-plaintext highlighter-rouge">couroutine</code>과 가장 비슷한 개념이 생겼습니다.</p><p><code class="language-plaintext highlighter-rouge">coroutine</code>은 실행 도중 일시 정지와 재 시작할 수 있는 함수입니다. 파이썬에서는 <code class="language-plaintext highlighter-rouge">async def</code>를 사용해서 만들 수 있습니다. <code class="language-plaintext highlighter-rouge">generator</code>와 유사하게 <code class="language-plaintext highlighter-rouge">yield from</code>과 비슷한 <code class="language-plaintext highlighter-rouge">await</code>을 사용합니다. Python 3.5에서 <code class="language-plaintext highlighter-rouge">async</code>, <code class="language-plaintext highlighter-rouge">await</code>이 소개되기 전 <code class="language-plaintext highlighter-rouge">generator</code>와 같은 방식으로 <code class="language-plaintext highlighter-rouge">coroutine</code>을 만들었습니다.(<code class="language-plaintext highlighter-rouge">await</code> 대신에 <code class="language-plaintext highlighter-rouge">yield from</code>) <code class="language-plaintext highlighter-rouge">coroutine</code>은 <code class="language-plaintext highlighter-rouge">await coro</code>가 호출될 때마다 실행될 수 있도록 <code class="language-plaintext highlighter-rouge">__await __()</code>를 구현합니다.</p><h3 id="coroutine-chain">Coroutine chain</h3><p><a href="https://docs.python.org/3.5/library/asyncio-task.html#example-chain-coroutines">18.5.3. Tasks and coroutines — Python 3.5.10 documentation</a></p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">asyncio</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Compute %s + %s ..."</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="p">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">print_sum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">compute</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"%s + %s = %s"</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">result</span><span class="p">))</span>
+
+<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="p">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+<span class="n">loop</span><span class="p">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">print_sum</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">loop</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+</pre></table></code></div></div><p><code class="language-plaintext highlighter-rouge">compute()</code>는 <code class="language-plaintext highlighter-rouge">print_sum()</code>에 연결되어있습니다. <code class="language-plaintext highlighter-rouge">print_sum()</code> 은 <code class="language-plaintext highlighter-rouge">compute()</code>가 끝나 결과를 반환할 때까지 기다립니다.</p><p><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7 " data-src="https://docs.python.org/3.5/_images/tulip_coro.png" alt="tulip_coro.png" /></p><p><strong>Task</strong>는 <a href="https://docs.python.org/3.5/library/asyncio-eventloop.html#asyncio.AbstractEventLoop.run_until_complete"><code class="language-plaintext highlighter-rouge">AbstractEventLoop.run_until_complete()</code></a> 메소드에서 <code class="language-plaintext highlighter-rouge">task</code>가 아닌 <code class="language-plaintext highlighter-rouge">coroutine</code> 객체를 통해 성성됩니다.</p><p><code class="language-plaintext highlighter-rouge">asyncio</code> <code class="language-plaintext highlighter-rouge">coroutine</code>에서 중요한 2가지 object <code class="language-plaintext highlighter-rouge">tasks</code>, <code class="language-plaintext highlighter-rouge">futures</code>가 있습니다.</p><h3 id="futures">Futures</h3><p><a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Future"><code class="language-plaintext highlighter-rouge">futures</code></a>는 <code class="language-plaintext highlighter-rouge">__await__()</code> 메소드를 구현한 객체입니다. 그들의 임무는 특정 상태와 결과를 유지하는 것입니다. 상태는 다음 중 하나 일 수 있습니다.</p><ul><li>PENDING: <code class="language-plaintext highlighter-rouge">future</code>가 결과나 예외를 갖고 있지 않음.<li>CANCELLED: <code class="language-plaintext highlighter-rouge">future</code>가 <code class="language-plaintext highlighter-rouge">fut.cancel()</code>에 의해 취소됨.<li>FINISHED: 결과 값이 <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Future.set_exception"><code class="language-plaintext highlighter-rouge">fut.set_result()</code></a>로 설정되거나 예외가 <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Future.set_exception"><code class="language-plaintext highlighter-rouge">fut.set_exception()</code></a>로 설정되어 <code class="language-plaintext highlighter-rouge">future</code>가 종료됨.</ul><p><code class="language-plaintext highlighter-rouge">future</code>의 결과는 반환될 Python 객체거나 발생할 수 있는 예외입니다.</p><p><code class="language-plaintext highlighter-rouge">future</code> 객체의 또 다른 중요한 기능은 <a href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Future.add_done_callback"><code class="language-plaintext highlighter-rouge">add_done_callback()</code></a>이라는 메서드를 포함한다는 것입니다. 이 메서드를 사용하면 예외가 발생 했든 완료 되었든 작업이 완료되는 즉시 <code class="language-plaintext highlighter-rouge">callback</code> 함수를 호출합니다.</p><h3 id="tasks">Tasks</h3><p><a href="https://docs.python.org/3/library/asyncio-task.html#task"><code class="language-plaintext highlighter-rouge">task</code></a> 객체는 <code class="language-plaintext highlighter-rouge">coroutine</code>을 감싸고 가장 안쪽 및 가장 바깥 쪽 <code class="language-plaintext highlighter-rouge">coroutine</code>과 통신하는 특별한 <code class="language-plaintext highlighter-rouge">futures</code>입니다. <code class="language-plaintext highlighter-rouge">coroutine</code>이 <code class="language-plaintext highlighter-rouge">future</code>를 기다릴 때마다 <code class="language-plaintext highlighter-rouge">future</code>는 작업으로 완전히 다시 전달되고 (<code class="language-plaintext highlighter-rouge">yield from</code> 과 같이) <code class="language-plaintext highlighter-rouge">task</code>은 이를 수신합니다.</p><p><code class="language-plaintext highlighter-rouge">task</code>은 <code class="language-plaintext highlighter-rouge">future</code>에 <code class="language-plaintext highlighter-rouge">add_done_callback()</code>을 호출하여 자신을 <code class="language-plaintext highlighter-rouge">future</code>에 바인딩합니다. <code class="language-plaintext highlighter-rouge">future</code>가 예외를 던지거나 결과값을 반환하여 완료되면 <code class="language-plaintext highlighter-rouge">task</code>가 <code class="language-plaintext highlighter-rouge">future</code>에 바인딩했던 콜백이 호출되고 다시 실행하게됩니다.</p><h2 id="asyncio">Asyncio</h2><p><code class="language-plaintext highlighter-rouge">asyncio</code> 내부에는 <code class="language-plaintext highlighter-rouge">task</code> 이벤트 루프가 있습니다. 이벤트 루프의 역할은 <code class="language-plaintext highlighter-rouge">task</code>이 준비 될 때마다 <code class="language-plaintext highlighter-rouge">task</code>을 호출하고 모든 <code class="language-plaintext highlighter-rouge">task</code>들이 단일 머신에서 돌아가도록 제어합니다.</p><p>이벤트 루프의 IO 부분은 <a href="https://docs.python.org/3/library/select.html#module-select"><code class="language-plaintext highlighter-rouge">select</code></a>라는 하나의 중요한 기능을 기반으로합니다. <code class="language-plaintext highlighter-rouge">Select</code>는 운영 체제 아래에서 구현된 블록킹 함수로, 소켓에서 들어 오거나 나가는 데이터를 대기 할 수 있습니다. 데이터가 수신되면 깨어나서 데이터를 수신한 소켓을 반환하거나 쓰기 준비가 된 소켓을 반환합니다.</p><p><code class="language-plaintext highlighter-rouge">asyncio</code>를 통해 소켓을 통해 데이터를 받거나 보내려고 할 때 맨 처음 일어나는 일은 소켓에 즉시 읽거나 보낼 수 있는 데이터가 있는지 먼저 확인하는 것입니다. <code class="language-plaintext highlighter-rouge">.send()</code> 버퍼가 가득 차거나 <code class="language-plaintext highlighter-rouge">.recv()</code> 버퍼가 비어있는 경우 소켓은 <code class="language-plaintext highlighter-rouge">select</code> 함수에 등록됩니다 (단순히 목록 중 하나에 추가, recv의 경우 rlist, 송신의 경우 wlist). 함수는 해당 소켓에 연결된 새로 생성 된 <code class="language-plaintext highlighter-rouge">future</code> 객체를 기다립니다.</p><p>사용 가능한 모든 <code class="language-plaintext highlighter-rouge">task</code>가 <code class="language-plaintext highlighter-rouge">future</code>를 기다리고있을 때 이벤트 루프는 <code class="language-plaintext highlighter-rouge">select</code>를 호출하고 대기합니다. 소켓 중 하나에 들어오는 데이터가 있거나 전송 버퍼가 비워지면 <code class="language-plaintext highlighter-rouge">asyncio</code>는 해당 소켓에 연결된 <code class="language-plaintext highlighter-rouge">future</code> 객체를 확인하고 완료로 설정합니다.</p><p>이제 모든 마법이 일어납니다. <code class="language-plaintext highlighter-rouge">future</code>는 완료로 설정되고 <code class="language-plaintext highlighter-rouge">add_done_callback()</code>으로 이전에 추가 된 작업이 다시 살아 나고 가장 안쪽의 <code class="language-plaintext highlighter-rouge">coroutine</code>을 재개하는 <code class="language-plaintext highlighter-rouge">coroutine</code>에서 <code class="language-plaintext highlighter-rouge">.send()</code>를 호출합니다 (<code class="language-plaintext highlighter-rouge">await</code> 체인으로 인해). 근처 버퍼에서 새로 수신된 데이터가 유출되었습니다.</p><p><code class="language-plaintext highlighter-rouge">recv()</code>의 경우 다시 메서드 체인 :</p><ol><li><code class="language-plaintext highlighter-rouge">select.select</code>가 대기합니다.<li>데이터가있는 준비 소켓이 리턴됩니다.<li>소켓의 데이터는 버퍼로 이동됩니다.<li><code class="language-plaintext highlighter-rouge">future.set_result()</code>가 호출됩니다.<li><code class="language-plaintext highlighter-rouge">add_done_callback()</code>으로 자신을 추가한 <code class="language-plaintext highlighter-rouge">task</code>가 깨어납니다.<li><code class="language-plaintext highlighter-rouge">task</code>는 <code class="language-plaintext highlighter-rouge">coroutine</code>에서 <code class="language-plaintext highlighter-rouge">.send()</code>를 호출하여 가장 안쪽의 <code class="language-plaintext highlighter-rouge">coroutine</code>을 깨웁니다.<li>데이터는 버퍼에서 읽고 겸손한 사용자에게 반환됩니다.</ol><p>요약하면 <code class="language-plaintext highlighter-rouge">asyncio</code>는 기능을 일시 중지하고 다시 시작할 수 있는 <code class="language-plaintext highlighter-rouge">coroutine</code> 기능을 사용합니다. 가장 안쪽의 <code class="language-plaintext highlighter-rouge">coroutine</code>에서 바깥쪽으로 데이터를 앞뒤로 전달할 수있는 기능의 <code class="language-plaintext highlighter-rouge">yield from</code>를 사용합니다. IO가 완료되기를 기다리는 동안 (OS <code class="language-plaintext highlighter-rouge">select</code> 기능을 사용하여) 기능 실행을 중지하기 위해이 모든 것을 사용합니다.</p><p>그리고 무엇보다도 한 기능이 일시 중지 된 동안 다른 기능이 실행되고 <code class="language-plaintext highlighter-rouge">asyncio</code>와 교차로 실행될 수 있습니다.</p><h2 id="event-loop">Event loop</h2><p><code class="language-plaintext highlighter-rouge">asyncio</code>의 핵심으로 <code class="language-plaintext highlighter-rouge">task</code>(<code class="language-plaintext highlighter-rouge">coroutine</code>)를 관리하는 전략이 핵심이다.</p><blockquote><p>이벤트 루프는 프로그램 에서 이벤트 또는 메시지 를 기다렸다가 전달합니다. 내부 또는 외부 “이벤트 공급자”(일반적으로 이벤트가 도착할 때까지 요청을 차단 함) 에 요청한 다음 관련 이벤트 처리기를 호출 합니다 ( “이벤트 디스패치”).</p></blockquote><h4 id="핵심-기능">핵심 기능</h4><ul><li>스케줄링<li>네트워크를 통한 데이터 전송<li>DNS 쿼리<li>OS signal 핸들링<li>서버와 커넥션을 만드는 편리한 추상화<li>비동기적 서브프로세스(코루틴을 뜻하는것일까?)<li>호출 등록, 실행 및 취소</ul><blockquote><p><del>macOS Python3.7 버전에서는 I/O Multiplexing을 <a href="https://en.wikipedia.org/wiki/Select_(Unix)"><code class="language-plaintext highlighter-rouge">select</code></a>를 사용하는 것으로 보입니다.</del></p><p><code class="language-plaintext highlighter-rouge">select</code> 함수를 사용하는 것이 아니라 python <code class="language-plaintext highlighter-rouge">selector</code> 모듈에 환경에 맞 멀티 I/O 플렉싱 모델을 기반으로 사용합니다.</p><div class="language-python highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="k">print</span><span class="p">(</span><span class="n">asyncio</span><span class="p">.</span><span class="n">get_event_loop</span><span class="p">())</span>
+<span class="c1"># &lt;_UnixSelectorEventLoop running=False closed=False debug=False&gt;
+</span></pre></table></code></div></div></blockquote><h4 id="함께보면-좋을-자료">함께보면 좋을 자료</h4><p><a href="https://hamait.tistory.com/834">파이썬 Asyncio 를 이해하기 위한 여정</a> <a href="https://blog.weirdx.io/post/56921">Python의 asyncio를 직접 만들어보자 (3) - 이상한모임</a> <a href="https://www.mimul.com/blog/io-multiplexing/">I/O Multiplexing(select, poll, epoll, kqueue) | Mimul Tech log</a> <a href="https://medium.com/@pekelny/fake-event-loop-python3-7498761af5e0">Understanding event loop with Python | by Ilya Pekelny | Medium</a> <a href="https://gist.github.com/andreybolonin/2413da76f088e2c5ab04df53f07659ea">libuv-vs-libev.md · GitHub</a></p><h4 id="참고자료">참고자료</h4><p><a href="https://medium.com/analytics-vidhya/python-generators-coroutines-async-io-with-examples-28771b586578">Python Generators/Coroutines/Async IO with examples | by Alex Anto Navis L | Analytics Vidhya | Medium</a> <a href="https://docs.python.org/3.4/library/asyncio-task.html#asyncio.coroutine">18.5.3. Tasks and coroutines — Python 3.4.10 documentation</a></p></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw mr-1"></i> <a href='/categories/programming/'>programming</a>, <a href='/categories/python/'>python</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw mr-1"></i> <a href="/tags/python/" class="post-tag no-text-decoration" >python</a> <a href="/tags/concurrency/" class="post-tag no-text-decoration" >concurrency</a> <a href="/tags/asyncio/" class="post-tag no-text-decoration" >asyncio</a></div><div class="post-tail-bottom d-flex justify-content-between align-items-center mt-3 pt-5 pb-2"><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> by the author.</div><div class="share-wrapper"> <span class="share-label text-muted mr-1">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=Python에서 asyncio의 동작 - 잡잡 블로그&url=https://kimeuichan.github.io/posts/python-asyncio/" data-toggle="tooltip" data-placement="top" title="Twitter" target="_blank" rel="noopener" aria-label="Twitter"> <i class="fa-fw fab fa-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=Python에서 asyncio의 동작 - 잡잡 블로그&u=https://kimeuichan.github.io/posts/python-asyncio/" data-toggle="tooltip" data-placement="top" title="Facebook" target="_blank" rel="noopener" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://telegram.me/share?text=Python에서 asyncio의 동작 - 잡잡 블로그&url=https://kimeuichan.github.io/posts/python-asyncio/" data-toggle="tooltip" data-placement="top" title="Telegram" target="_blank" rel="noopener" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <i class="fa-fw fas fa-link small" onclick="copyLink()" data-toggle="tooltip" data-placement="top" title="Copy link"></i> </span></div></div></div></div></div><div id="panel-wrapper" class="col-xl-3 pl-2 text-muted topbar-down"><div class="access"><div id="access-lastmod" class="post"> <span>Recent Update</span><ul class="post-content pl-0 pb-1 ml-1 mt-2"><li><a href="/posts/deploy-docker-more-faster/">자주 변경되는 도커 이미지 빠르게 배포하기 (feat. 이미지 사이즈)</a><li><a href="/posts/python-asyncio/">Python에서 asyncio의 동작</a><li><a href="/posts/python-logging-with-loguru/">loguru를 사용하여 python 로깅 쉽게하기</a><li><a href="/posts/asnycio-with-blocing-task/">Asyncio에서 동기 라이브러리 사용하기(feat.태스크와 코루틴)</a></ul></div><div id="access-tags"> <span>Trending Tags</span><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/python/">python</a> <a class="post-tag" href="/tags/concurrency/">concurrency</a> <a class="post-tag" href="/tags/asyncio/">asyncio</a> <a class="post-tag" href="/tags/docker/">docker</a> <a class="post-tag" href="/tags/async/">async</a> <a class="post-tag" href="/tags/celery/">celery</a> <a class="post-tag" href="/tags/parallel/">parallel</a> <a class="post-tag" href="/tags/rabbitmq/">rabbitmq</a></div></div></div><div id="toc-wrapper" class="pl-0 pr-4 mb-5"> <span class="pl-3 pt-2 mb-2">Contents</span><nav id="toc" data-toggle="toc"></nav></div></div></div><div class="row"><div class="col-12 col-lg-11 col-xl-8"><div id="post-extend-wrapper" class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><div id="related-posts" class="mt-5 mb-2 mb-sm-4"><h3 class="pt-2 mt-1 mb-4 ml-1" data-toc-skip>Further Reading</h3><div class="card-deck mb-4"><div class="card"> <a href="/posts/asnycio-with-blocing-task/"><div class="card-body"> <span class="timeago small" > Dec 11, 2020 <i class="unloaded">2020-12-11T00:45:00+09:00</i> </span><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Asyncio에서 동기 라이브러리 사용하기(feat.태스크와 코루틴)</h3><div class="text-muted small"><p> 회사에서 많은 양의 API를 처리해야하는 서버를 구축해야하는 경우가 생겼습니다. 프로젝트 셋업에 있어 빠른 처리를 위해 Sanic 프레임워크를 사용하기로 했습니다. 다만, celery를 호출해야하는 경우가 생겨 asyncio와 호환성을 찾다가 결국 발견하지 못해 asyncio를 이용한 해결방안을 포스팅합니다. 찾아본 방법 celery 자체에...</p></div></div></a></div><div class="card"> <a href="/posts/python-gil/"><div class="card-body"> <span class="timeago small" > Nov 20, 2020 <i class="unloaded">2020-11-20T06:00:00+09:00</i> </span><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Python의 GIL</h3><div class="text-muted small"><p> 해당글은 What Is the Python Global Interpreter Lock (GIL)? – Real Python을 번역 및 정리한 포스팅입니다. GIL이란 Global Interpreter Lock의 약자입니다. 한 쓰레드만을 사용해 파이썬 인터프리터를 제어하게 하는 mutex(or lock) 입니다. 어느 시점에서든 하나의 스레드 만 ...</p></div></div></a></div><div class="card"> <a href="/posts/python-celery/"><div class="card-body"> <span class="timeago small" > Nov 15, 2020 <i class="unloaded">2020-11-15T06:00:00+09:00</i> </span><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Python Celery란</h3><div class="text-muted small"><p> 해당 글은 celery를 이용하여 코드를 잘 작성하는것에 비중을 둔 글이 아니라 간단한 celery 소개 및 특징과 broker에 대해 공부하기 위해 작성한 글입니다. Celery는 python 동시성 프로그래밍에서 가장 많이 사용되는 방법 중 하나입니다. 몇 가지 설정만 한다면 간단하게 python 코드를 실행하는 worker를 만들 ...</p></div></div></a></div></div></div><div class="post-navigation d-flex justify-content-between"> <a href="/posts/docker-rabbitmq-clustering/" class="btn btn-outline-primary"><p>Docker RabibtMQ Clustering 하기</p></a> <a href="/posts/python-celery/" class="btn btn-outline-primary"><p>Python Celery란</p></a></div></div></div></div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lozad/dist/lozad.min.js"></script> <script type="text/javascript"> const imgs = document.querySelectorAll('#post-wrapper img'); const observer = lozad(imgs); observer.observe(); </script><footer class="d-flex w-100 justify-content-center"><div class="d-flex justify-content-between align-items-center"><div class="footer-left"><p class="mb-0"> © 2021 <a href="https://github.com/kimeuichan">Euichan Kim</a>. <span data-toggle="tooltip" data-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author.">Some rights reserved.</span></p></div><div class="footer-right"><p class="mb-0"> Powered by <a href="https://jekyllrb.com" target="_blank" rel="noopener">Jekyll</a> with <a href="https://github.com/cotes2020/jekyll-theme-chirpy/" target="_blank" rel="noopener">Chirpy</a> theme.</p></div></div></footer></div><div id="search-result-wrapper" class="d-flex justify-content-center unloaded"><div class="col-12 col-xl-11 post-content"><div id="search-hints"><h4 class="text-muted mb-4">Trending Tags</h4><a class="post-tag" href="/tags/python/">python</a> <a class="post-tag" href="/tags/concurrency/">concurrency</a> <a class="post-tag" href="/tags/asyncio/">asyncio</a> <a class="post-tag" href="/tags/docker/">docker</a> <a class="post-tag" href="/tags/async/">async</a> <a class="post-tag" href="/tags/celery/">celery</a> <a class="post-tag" href="/tags/parallel/">parallel</a> <a class="post-tag" href="/tags/rabbitmq/">rabbitmq</a></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><div id="mask"></div><a id="back-to-top" href="#" aria-label="back-to-top" class="btn btn-lg btn-box-shadow" role="button"> <i class="fas fa-angle-up"></i> </a> <script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@1.7.3/dest/simple-jekyll-search.min.js"></script> <script> SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<div class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-lg-4 pr-lg-4 pl-xl-0 pr-xl-0"> <a href="https://kimeuichan.github.io{url}">{title}</a><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"><div class="mr-sm-4"><i class="far fa-folder fa-fw"></i>{categories}</div><div><i class="fa fa-tag fa-fw"></i>{tags}</div></div><p>{snippet}</p></div>', noResultsText: '<p class="mt-5">Oops! No result founds.</p>' }); </script> <script async src="https://www.googletagmanager.com/gtag/js?id="></script> <script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', ''); </script>
