@@ -151,7 +151,7 @@ CMD ["python", "/app.py"]
 ```Dockerfile
 FROM composer as builder
 
-COPY instachart/crew/php/composer.json /app
+COPY composer.json /app
 RUN composer install  \
     --ignore-platform-reqs \
     --no-ansi \
