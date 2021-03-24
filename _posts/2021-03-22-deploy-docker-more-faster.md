@@ -1,7 +1,7 @@
 ---
 title: 자주 변경되는 도커 이미지 빠르게 배포하기 (feat. 이미지 사이즈)
 author: daru
-date: 2021-03-22 22:14:13
+date: 2021-03-23 13:14:13
 categories: [devops,docker]
 tags: [docker]
 ---
